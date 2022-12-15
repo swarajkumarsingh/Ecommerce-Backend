@@ -1,0 +1,32 @@
+{
+  "name": "ecommerce-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node app.local.js",
+    "dev": "nodemon app.local.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.2.1",
+    "express": "^4.18.2",
+    "express-validator": "^6.14.2",
+    "firebase-admin": "^11.3.0",
+    "mongo-sanitize": "^1.1.0",
+    "mongoose": "^6.8.0",
+    "morgan": "^1.10.0",
+    "razorpay": "^2.8.4",
+    "uuidv4": "^6.2.13"
+  },
+  "devDependencies": {
+    "dotenv": "^16.0.3",
+    "eslint": "^8.29.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "prettier": "^2.8.1"
+  }
+}
