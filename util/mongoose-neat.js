@@ -22,3 +22,4 @@ module.exports.neatMongoose = function () {
   }
   return obj;
 };
+

@@ -4,9 +4,10 @@ const mongoose = require("mongoose");
 mongoose.set("strictQuery", true);
 mongoose.Promise = global.Promise;
 
-// const mongoUri = `mongodb://localhost/WearingoDB`
 // const mongoUri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_URL}/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
+// const mongoUri =
+  // "mongodb+srv://swaraj:9PHGznxSFnKLRlmg@cluster0.9qzb8lu.mongodb.net/?retryWrites=true&w=majority";
 const mongoUri = "mongodb://localhost:27017/Ecommerce-Backend";
 
 let isConnected;
@@ -28,7 +29,7 @@ module.exports = connectToDatabase = async () => {
   return mongoose
     .connect(mongoUri, {
       useUnifiedTopology: true,
-      useNewUrlParser: true,
+      useNewUrlParser: true,  
     })
     .then((db) => {
       isConnected = db.connections[0].readyState;

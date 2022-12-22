@@ -1,63 +1,98 @@
 // Creating schema and adding creating schema, and passing it to productController
 
 const mongoose = require("mongoose");
-const neatMongoose = require("../../util/mongoose-neat.js")
 
-const productSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, "Please Enter product Name"],
-    trim: true,
-  },
-  description: {
-    type: String,
-    required: [true, "Please Enter product description"],
-  },
-  price: {
-    type: Number,
-    required: [true, "Please Enter product description"],
-    maxLength: [8, "Price cannot exceed 8 characters"],
-  },
-  ratings: {
-    type: Number,
-    default: 0,
-  },
-  images: [
-    {
-      public_id: {
-        type: String,
-        required: true,
+const productSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "Please Enter product Name"],
+      trim: true,
+    },
+    description: {
+      type: String,
+      required: [true, "Please Enter product description"],
+    },
+    primaryImage: { type: String, trim: true },
+    otherImages: [{ type: String }],
+    gender: { type: String, required: true },
+    primaryColor: { type: String },
+    mrp: { type: Number, required: true },
+    price: { type: Number, required: true },
+    ratings: {
+      type: Number,
+      default: 0,
+    },
+    category: {
+      type: String,
+      required: [true, "Please Enter product category"],
+    },
+    stock: {
+      type: Number,
+      default: 1,
+      required: [true, "Please Enter product Stock"],
+      maxLength: [4, "Stock cannot exceed 4 characters"],
+    },
+    numOfReviews: {
+      type: Number,
+      default: 0,
+    },
+    isWearAndReturnEnabled: { type: Boolean, default: false },
+    productViewers: [
+      {
+        user: {
+          type: mongoose.Types.ObjectId,
+          ref: "User",
+        },
       },
-      url: {
-        type: String,
-        required: true,
+    ],
+    brandInfo: { type: mongoose.Schema.Types.Mixed },
+    locationName: { type: String, trim: true },
+    location: {
+      type: {
+        type: String, // Don't do `{ location: { type: String } }`
+        enum: ["Point"], // 'location.type' must be 'Point'
+        default: "Point",
+      },
+      coordinates: {
+        type: [Number],
+        default: [0, 0],
       },
     },
-  ],
 
-  category: {
-    type: String,
-    required: [true, "Please Enter product category"],
+    createdBy: {
+      type: mongoose.Types.ObjectId,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
   },
-  Stock: {
-    type: Number,
-    default: 1,
-    required: [true, "Please Enter product Stock"],
-    maxLength: [4, "Stock cannot exceed 4 characters"],
-  },
-  numOfReviews: {
-    type: Number,
-    default: 0,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  {
+    toObject: {
+      transform: function (_, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+        delete ret.__v;
+        if (
+          "location" in ret &&
+          "type" in ret.location &&
+          "coordinates" in ret.location &&
+          Array.isArray(ret.location.coordinates) &&
+          ret.location.coordinates.length > 1
+        ) {
+          ret.location = [
+            ret.location.coordinates[1],
+            ret.location.coordinates[0],
+          ];
+        }
+        return ret;
+      },
+    },
+  }
+);
 
-productSchema.index({ name: 1 }, { unique: true, sparse: true });
-productSchema.methods.toJSON = neatMongoose;
+productSchema.index({ name: 1 }, { sparse: true });
+productSchema.index({ description: 1 }, { sparse: true });
 
-
-// creating and exporting the collection Product (sameTime)
-module.exports = mongoose.model("Product", productSchema);
+module.exports = mongoose.model("Product", productSchema, "Product");

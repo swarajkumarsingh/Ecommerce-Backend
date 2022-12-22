@@ -18,7 +18,6 @@ const successResponseGenerator = (message, data, extra = {}) => {
 };
 
 const successResponse = function (message, data, extra = {}) {
-  console.log("user", data);
   return this.status(statusCode.STATUS_OK).send(
     successResponseGenerator(message, data, extra)
   );

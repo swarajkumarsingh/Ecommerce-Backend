@@ -1,5 +1,5 @@
 const fakeAuthorizer = (req, res, next) => {
-  req.userId = "638d560a1ae5ddd743624df8"; // Replace with your User id
+  req.userId = "63a44cf96b27f75282010e6a"; // Replace with your User id
   next();
 };
 

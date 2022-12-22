@@ -6,9 +6,8 @@ require("dotenv").config({ path: "./env" });
 
 const connectDb = require("./db/connect");
 const responseware = require("./util/middlewares/middelwares.js");
-const errorMiddleware = require("./util/middlewares/error.js");
-
 const fakeAuthorizer = require("./util/fake-authorizer.js");
+const errorMiddleware = require("./util/middlewares/error.js");
 const { paginateParams } = require("./util/middlewares/request-sanitize.js");
 
 const app = express();
@@ -22,7 +21,7 @@ connectDb();
 
 // Firebase Admin SDK
 const firebase = require("firebase-admin");
-const serviceAccount = require("./eco-backend-818d1-firebase-adminsdk-20qbl-8335d11883.json");
+const serviceAccount = require("./firebase-sdk.json");
 firebase.initializeApp({
   credential: firebase.credential.cert(serviceAccount),
 });
