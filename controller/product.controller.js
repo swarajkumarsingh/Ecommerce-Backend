@@ -9,7 +9,9 @@ module.exports.createProduct = async (req, res) => {
 };
 
 module.exports.getAllProduct = async (req, res) => {
-  const products = await model.getAllProduct();
+  const { search } = req.body;
+  const { page, limit } = req.query;
+  const products = await model.getAllProduct(search, page, limit);
   if (products && Array.isArray(products)) {
     return res.successResponse("All Products fetched successfully", products);
   }
@@ -18,7 +20,7 @@ module.exports.getAllProduct = async (req, res) => {
 
 module.exports.getProduct = async (req, res) => {
   const pid = req.params.pid;
-  const userId = req.userId;  
+  const userId = req.userId;
   const product = await model.getProductById(userId, pid);
   if (product && "id" in product) {
     return res.successResponse("Product fetched successfully", product);
@@ -33,4 +35,23 @@ module.exports.updateProduct = async (req, res) => {
     return res.successResponse("Product fetched successfully", product);
   }
   return res.internalErrorResponse("Something went wrong");
+};
+
+module.exports.getProductViews = async (req, res) => {
+  const pid = req.params.pid;
+  const product = await model.getProductViews(pid);
+  console.log(product);
+  if (product && "id" in product) {
+    return res.successResponse("Product fetched successfully", product);
+  }
+  return res.internalErrorResponse("Something went wrong");
+};
+
+module.exports.deleteProduct = async (req, res) => {
+  const pid = req.params.pid;
+  const response = await model.deleteProduct(pid);
+  if (response && "deletedCount" in response) {
+    return res.successResponse(`User deleted successfully`);
+  }
+  res.internalErrorResponse("Something went wrong", response.error);
 };

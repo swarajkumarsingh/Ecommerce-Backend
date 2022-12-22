@@ -1,6 +1,4 @@
-/* eslint-disable no-unused-vars */
 const Product = require("../db/model/Product.js");
-const User = require("../db/model/User.js");
 const mongoose = require("mongoose");
 
 module.exports.createProduct = async (req) => {
@@ -33,7 +31,7 @@ module.exports.createProduct = async (req) => {
         brandInfo,
       });
 
-      return resolve(product);
+      return resolve(product.toObject());
     } catch (error) {
       resolve({ error });
     }
@@ -43,39 +41,79 @@ module.exports.createProduct = async (req) => {
 module.exports.getProductById = async (uid, id, projection) => {
   return new Promise(async (resolve) => {
     try {
-      const product = await Product.findOne({ _id: id });
+      const findProduct = await Product.findOne({ _id: id });
 
-      if (product && "id" in product) {
-        await Product.findOneAndUpdate(
-          { _id: new mongoose.Types.ObjectId(id) },
-          {
-            productViews: [
-              {
-                user: uid,
-              },
-            ],
-          },
-          { new: true, projection: projection || {} }
-        );
-
-        return resolve(product);
+      // check product exists
+      if (!findProduct && !"id" in findProduct) {
+        return resolve({ error: "404 No product found with the given ID" });
       }
-      return resolve({ error: "404 No product found with the given ID" });
+
+      // Avoid to insert id again in productViewers
+      if (
+        findProduct.productViewers.user &&
+        findProduct.productViewers.user.toString().includes(uid)
+      ) {
+        return resolve(findProduct.toObject());
+      }
+
+      // Push and insert ID
+      const product = await Product.findOneAndUpdate(
+        { _id: new mongoose.Types.ObjectId(id) },
+        {
+          $push: {
+            productViewers: {
+              user: uid,
+            },
+          },
+        },
+        { new: true, projection: projection || {} }
+      );
+      return resolve(product.toObject());
+    } catch (error) {
+      console.log(error);
+      resolve({ error });
+    }
+  });
+};
+
+module.exports.getProductViews = async (id) => {
+  return new Promise(async (resolve) => {
+    try {
+      const product = await Product.findOne(
+        { _id: id },
+        { projection: { productViewers: 1 } }
+      ).populate("productViewers.user", "name email phone");
+      return resolve(product.toObject());
     } catch (error) {
       resolve({ error });
     }
   });
 };
 
-module.exports.getAllProduct = async () => {
+module.exports.getAllProduct = async (search, page, limit) => {
   return new Promise(async (resolve) => {
     try {
-      const products = await Product.find();
-
-      if (products && Array.isArray(products)) {
-        resolve(products);
+      const searchQuery = search || "";
+      const mongoLimit = limit || 8;
+      const mongoSkip = page ? (parseInt(page) - 1) * mongoLimit : 0;
+      const query = [];
+      if (searchQuery.trim().length > 1) {
+        query.push({ $match: { $text: { $search: searchQuery } } });
       }
-      resolve({ error: "Error while fetching products list" });
+      const projection = {
+        __v: 0,
+        productViewers: 0,
+        createdBy: 0,
+        stock: 0,
+      };
+      // Add Pagination
+      query.push(
+        { $sort: { _id: -1 } },
+        { $skip: mongoSkip },
+        { $limit: mongoLimit },
+        { $project: projection }
+      );
+      return resolve(Product.aggregate(query));
     } catch (error) {
       resolve({ error });
     }
@@ -124,12 +162,38 @@ module.exports.updateProduct = async (id, body, projection) => {
         }
       );
       if (updatedResult && "id" in updatedResult) {
-        return resolve(updatedResult);
+        return resolve(updatedResult.toObject());
       }
 
       return resolve({ error: `User not found with id ${id}` });
     } catch (err) {
       resolve({ error: err });
+    }
+  });
+};
+
+module.exports.deleteProduct = async (id, projection) => {
+  return new Promise(async (resolve) => {
+    try {
+      // Remove Product from Product Model
+
+      const deletedUser = await Product.deleteOne({
+        _id: id,
+        projection: projection || {},
+      });
+
+      resolve(deletedUser);
+
+      // Delete User from Review
+      // await this.deleteReviewByUser(id);
+
+      // Delete User Address
+      // await this.deleteAddressByUser(id);
+
+      // Delete User Favorite
+      // await this.deleteFavoriteByUser(id);
+    } catch (error) {
+      resolve({ error });
     }
   });
 };

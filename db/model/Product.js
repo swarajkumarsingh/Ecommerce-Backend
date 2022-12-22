@@ -31,21 +31,18 @@ const productSchema = new mongoose.Schema(
       type: Number,
       default: 1,
       required: [true, "Please Enter product Stock"],
-      maxLength: [4, "Stock cannot exceed 4 characters"],
     },
     numOfReviews: {
       type: Number,
       default: 0,
     },
     isWearAndReturnEnabled: { type: Boolean, default: false },
-    productViewers: [
-      {
-        user: {
-          type: mongoose.Types.ObjectId,
-          ref: "User",
-        },
+    productViewers: {
+      user: {
+        type: mongoose.Types.ObjectId,
+        ref: "User",
       },
-    ],
+    },
     brandInfo: { type: mongoose.Schema.Types.Mixed },
     locationName: { type: String, trim: true },
     location: {
@@ -94,5 +91,11 @@ const productSchema = new mongoose.Schema(
 
 productSchema.index({ name: 1 }, { sparse: true });
 productSchema.index({ description: 1 }, { sparse: true });
+
+productSchema.index(
+  { name: "text", brandInfo: "text" },
+  { weights: { name: 10, brandInfo: 6 } },
+  { collation: { locale: "en", strength: 2 } }
+);
 
 module.exports = mongoose.model("Product", productSchema, "Product");

@@ -43,7 +43,7 @@ module.exports.getMyProfile = async (req, res) => {
   }
   res.internalErrorResponse("Something went wrong");
 };
-1;
+
 module.exports.deleteUser = async (req, res) => {
   const userId = req.params.uid;
   const response = await model.deleteUser(userId);

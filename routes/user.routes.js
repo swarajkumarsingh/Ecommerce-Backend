@@ -1,6 +1,16 @@
 const express = require("express");
 const { body, param } = require("express-validator");
-const controller = require("../controller/user.controller.js");
+const {
+  createUser,
+  getMyProfile,
+  updateProfile,
+  updateUser,
+  getUsers,
+  getUser,
+  updateUserRole,
+  deleteUser,
+  getUserRole,
+} = require("../controller/user.controller.js");
 const { authorizeRoles } = require("../util/middlewares/auth.js");
 const {
   requestValidator,
@@ -25,46 +35,46 @@ router.post(
     body("phone", "Invalid Phone Number").isLength({ min: 13, max: 13 }),
   ],
   requestValidator,
-  controller.createUser
+  createUser
 );
-router.get("/profile", controller.getMyProfile);
-router.patch("/profile/update", controller.updateProfile);
+router.get("/profile", getMyProfile);
+router.patch("/profile/update", updateProfile);
 router.patch(
   "/user/:uid",
   authorizeRoles("admin"),
   [param("uid", "Invalid userId").isMongoId(), requestValidator],
-  controller.updateUser
+  updateUser
 );
 
 // Admin Route
-router.get("/users", authorizeRoles("admin"), controller.getUsers);
+router.get("/users", authorizeRoles("admin"), getUsers);
 
 router.delete(
   "/user/:uid",
   authorizeRoles("admin"),
   [param("uid", "Invalid userId").isMongoId(), requestValidator],
-  controller.deleteUser
+  deleteUser
 );
 
 router.get(
   "/get-user/:uid",
   authorizeRoles("admin"),
   [param("uid", "Invalid userId").isMongoId(), requestValidator],
-  controller.getUser
+  getUser
 );
 
 router.get(
   "/get-user-role/:uid",
   authorizeRoles("admin"),
   [param("uid", "Invalid userId").isMongoId(), requestValidator],
-  controller.getUserRole
+  getUserRole
 );
 
 router.patch(
   "/update-role/:uid",
   authorizeRoles("admin"),
   [param("uid", "Invalid userId").isMongoId(), requestValidator],
-  controller.updateUserRole
+  updateUserRole
 );
 
 // Seller Route

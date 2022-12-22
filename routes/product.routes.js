@@ -4,6 +4,8 @@ const {
   getProduct,
   getAllProduct,
   updateProduct,
+  getProductViews,
+  deleteProduct,
 } = require("../controller/product.controller");
 const { body, param } = require("express-validator");
 const { authorizeRoles } = require("../util/middlewares/auth.js");
@@ -46,12 +48,25 @@ router.get("/product/:pid", [
   getProduct,
 ]);
 
+router.get("/product-viewers-list/:pid", [
+  param("pid", "Invalid ProductId").isMongoId(),
+  requestValidator,
+  authorizeRoles("admin"),
+  getProductViews,
+]);
+
 router.patch("/product/:pid", [
   param("pid", "Invalid ProductId").isMongoId(),
   requestValidator,
   updateProduct,
 ]);
 
-router.get("/products/all", getAllProduct);
+router.delete("/product/:pid", [
+  param("pid", "Invalid ProductId").isMongoId(),
+  requestValidator,
+  deleteProduct,
+]);
+
+router.get("/products", getAllProduct);
 
 module.exports = router;

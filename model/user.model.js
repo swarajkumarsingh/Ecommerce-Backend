@@ -31,7 +31,7 @@ module.exports.getUsers = async (search, page, limit) => {
     const mongoLimit = limit || 8;
     const mongoSkip = page ? (parseInt(page) - 1) * mongoLimit : 0;
     const query = [];
-    if (searchQuery.trim().length > 3) {
+    if (searchQuery.trim().length > 1) {
       query.push({ $match: { $text: { $search: searchQuery } } });
     }
     const projection = {
@@ -57,12 +57,10 @@ module.exports.findUserByEmail = async (email, projection) => {
   return await User.findOne({ email }, projection || { __v: 0 });
 };
 
-module.exports.findUserRoleById = async (id, projection) => {
-  const user = await User.findOne({ _id: id }, projection || {});
+module.exports.findUserRoleById = async (id) => {
+  const user = await User.findOne({ _id: id }, { role: 1 });
 
-  const role = user.role;
-
-  return { role };
+  return user;
 };
 
 module.exports.updateUser = async (userId, body, projection) => {
