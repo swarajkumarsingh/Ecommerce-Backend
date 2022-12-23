@@ -8,7 +8,7 @@ module.exports.createUser = async (body) => {
 
       const userExists = await this.findUserByEmail(email);
       if (userExists && "id" in userExists) {
-        resolve({ error: `User Already Exists` });
+      return resolve({ already: `No User found with the id` });
       }
 
       const user = await new User({
@@ -47,7 +47,7 @@ module.exports.getUsers = async (search, page, limit) => {
       { $limit: mongoLimit },
       { $project: projection }
     );
-    return User.aggregate(query);
+    return await User.aggregate(query);
   } catch (error) {
     return { error };
   }
@@ -59,7 +59,6 @@ module.exports.findUserByEmail = async (email, projection) => {
 
 module.exports.findUserRoleById = async (id) => {
   const user = await User.findOne({ _id: id }, { role: 1 });
-
   return user;
 };
 
@@ -91,7 +90,7 @@ module.exports.updateUser = async (userId, body, projection) => {
         return resolve({ data: updatedResult.toObject() });
       }
 
-      return resolve({ error: `User not found with id ${userId}` });
+      return resolve({ notFound: `No User found with the id` });
     } catch (err) {
       resolve({ error: err });
     }
@@ -142,7 +141,7 @@ module.exports.updateUserByAdmin = async (userId, body, projection) => {
         return resolve({ data: updatedResult.toObject() });
       }
 
-      return resolve({ error: `User not found with id ${userId}` });
+      return resolve({ notFound: `No User found with the id` });
     } catch (err) {
       resolve({ error: err });
     }
@@ -166,7 +165,7 @@ module.exports.updateUserRole = async (userId, body, projection) => {
         return resolve({ data: updatedResult.toObject() });
       }
 
-      return resolve({ error: `User not found with id ${userId}` });
+      return resolve({ notFound: `No User found with the id` });
     } catch (err) {
       resolve({ error: err });
     }
@@ -192,7 +191,7 @@ module.exports.deleteUser = async (id, projection) => {
         });
       }
 
-      return resolve({ error: `Error While Deleting the user ${id}` });
+      return resolve({ notFound: `No User found with the id` });
 
       // Delete User from Review
       // await this.deleteReviewByUser(id);
@@ -200,8 +199,8 @@ module.exports.deleteUser = async (id, projection) => {
       // Delete User Address
       // await this.deleteAddressByUser(id);
 
-      // Delete User Favorite
-      // await this.deleteFavoriteByUser(id);
+      // Delete User wishlist
+      // await this.deleteWishListByUser(id);
     } catch (error) {
       resolve({ error });
     }
@@ -210,6 +209,5 @@ module.exports.deleteUser = async (id, projection) => {
 
 module.exports.deleteUserById = async (id, projection) => {
   const user = await User.findByIdAndDelete(id, projection || {});
-
   return user;
 };

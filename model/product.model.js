@@ -45,7 +45,7 @@ module.exports.getProductById = async (uid, id, projection) => {
 
       // check product exists
       if (!findProduct && !"id" in findProduct) {
-        return resolve({ error: "404 No product found with the given ID" });
+        return resolve({ notFound: `Product not found` });
       }
 
       // Avoid to insert id again in productViewers
@@ -70,7 +70,6 @@ module.exports.getProductById = async (uid, id, projection) => {
       );
       return resolve(product.toObject());
     } catch (error) {
-      console.log(error);
       resolve({ error });
     }
   });
@@ -83,7 +82,12 @@ module.exports.getProductViews = async (id) => {
         { _id: id },
         { projection: { productViewers: 1 } }
       ).populate("productViewers.user", "name email phone");
-      return resolve(product.toObject());
+
+      if ("_id" in product || "id" in product) {
+        return resolve(product.toObject());
+      }
+
+      return resolve({ notFound: "Product not found" });
     } catch (error) {
       resolve({ error });
     }
@@ -113,7 +117,8 @@ module.exports.getAllProduct = async (search, page, limit) => {
         { $limit: mongoLimit },
         { $project: projection }
       );
-      return resolve(Product.aggregate(query));
+      const product = await Product.aggregate(query);
+      return resolve(product);
     } catch (error) {
       resolve({ error });
     }
@@ -165,7 +170,7 @@ module.exports.updateProduct = async (id, body, projection) => {
         return resolve(updatedResult.toObject());
       }
 
-      return resolve({ error: `User not found with id ${id}` });
+      return resolve({ notFound: `User not found with id ${id}` });
     } catch (err) {
       resolve({ error: err });
     }
@@ -182,7 +187,10 @@ module.exports.deleteProduct = async (id, projection) => {
         projection: projection || {},
       });
 
-      resolve(deletedUser);
+      if (deletedUser && deletedUser != null) {
+        return resolve(deletedUser);
+      }
+      return resolve({ notFound: "Product not found" });
 
       // Delete User from Review
       // await this.deleteReviewByUser(id);
@@ -190,8 +198,8 @@ module.exports.deleteProduct = async (id, projection) => {
       // Delete User Address
       // await this.deleteAddressByUser(id);
 
-      // Delete User Favorite
-      // await this.deleteFavoriteByUser(id);
+      // Delete User wishlist
+      // await this.deleteWishListByUser(id);
     } catch (error) {
       resolve({ error });
     }

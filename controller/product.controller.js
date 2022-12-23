@@ -24,8 +24,12 @@ module.exports.getProduct = async (req, res) => {
   const product = await model.getProductById(userId, pid);
   if (product && "id" in product) {
     return res.successResponse("Product fetched successfully", product);
+  } else if (response && "notFound" in response) {
+    return res
+      .status(404)
+      .json({ error: true, message: "No user found with the given id" });
   }
-  return res.internalErrorResponse("Something went wrong");
+  return resolve("Something went wrong");
 };
 
 module.exports.updateProduct = async (req, res) => {
@@ -33,6 +37,10 @@ module.exports.updateProduct = async (req, res) => {
   const product = await model.updateProduct(pid, req.body);
   if (product && "id" in product) {
     return res.successResponse("Product fetched successfully", product);
+  } else if (response && "notFound" in response) {
+    return res
+      .status(404)
+      .json({ error: true, message: "No user found with the given id" });
   }
   return res.internalErrorResponse("Something went wrong");
 };
@@ -43,6 +51,10 @@ module.exports.getProductViews = async (req, res) => {
   console.log(product);
   if (product && "id" in product) {
     return res.successResponse("Product fetched successfully", product);
+  } else if (response && "notFound" in response) {
+    return res
+      .status(404)
+      .json({ error: true, message: "No user found with the given id" });
   }
   return res.internalErrorResponse("Something went wrong");
 };
@@ -52,6 +64,10 @@ module.exports.deleteProduct = async (req, res) => {
   const response = await model.deleteProduct(pid);
   if (response && "deletedCount" in response) {
     return res.successResponse(`User deleted successfully`);
+  } else if (response && "notFound" in response) {
+    return res
+      .status(404)
+      .json({ error: true, message: "No user found with the given id" });
   }
   res.internalErrorResponse("Something went wrong", response.error);
 };

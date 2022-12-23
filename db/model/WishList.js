@@ -1,17 +1,20 @@
 const mongoose = require("mongoose");
-const neatMongoose = require("../../util/mongoose-neat.js");
 
-const favoriteSchema = new mongoose.Schema(
+const whishListSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.ObjectId,
-      ref: "user",
+      ref: "User",
       required: true,
     },
     productId: {
       type: mongoose.Schema.ObjectId,
-      ref: "product",
+      ref: "Product",
       required: true,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
     },
   },
   {
@@ -26,6 +29,4 @@ const favoriteSchema = new mongoose.Schema(
   }
 );
 
-favoriteSchema.methods.toJSON = neatMongoose;
-
-module.exports = mongoose.model("Favorite", favoriteSchema, "Favorite");
+module.exports = mongoose.model("WishList", whishListSchema, "WishList");

@@ -77,5 +77,4 @@ router.patch(
   updateUserRole
 );
 
-// Seller Route
 module.exports = router;

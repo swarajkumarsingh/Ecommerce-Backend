@@ -36,4 +36,4 @@ const couponSchema = new mongoose.Schema(
 
 couponSchema.methods.toJSON = neatMongoose;
 
-module.exports = mongoose.model("Favorite", couponSchema, "Favorite");
+module.exports = mongoose.model("favourite", couponSchema, "favourite");
