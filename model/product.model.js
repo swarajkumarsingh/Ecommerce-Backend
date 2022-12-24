@@ -38,10 +38,10 @@ module.exports.createProduct = async (req) => {
   });
 };
 
-module.exports.getProductById = async (uid, id, projection) => {
+module.exports.getProductById = async (uid, pid, projection) => {
   return new Promise(async (resolve) => {
     try {
-      const findProduct = await Product.findOne({ _id: id });
+      const findProduct = await Product.findOne({ _id: pid });
 
       // check product exists
       if (!findProduct && !"id" in findProduct) {
@@ -50,21 +50,17 @@ module.exports.getProductById = async (uid, id, projection) => {
 
       // Avoid to insert id again in productViewers
       if (
-        findProduct.productViewers.user &&
-        findProduct.productViewers.user.toString().includes(uid)
+        findProduct.productViewers &&
+        findProduct.productViewers.toString().includes(uid)
       ) {
         return resolve(findProduct.toObject());
       }
 
       // Push and insert ID
       const product = await Product.findOneAndUpdate(
-        { _id: new mongoose.Types.ObjectId(id) },
+        { _id: new mongoose.Types.ObjectId(pid) },
         {
-          $push: {
-            productViewers: {
-              user: uid,
-            },
-          },
+          $push: { productViewers: uid },
         },
         { new: true, projection: projection || {} }
       );
@@ -81,7 +77,7 @@ module.exports.getProductViews = async (id) => {
       const product = await Product.findOne(
         { _id: id },
         { projection: { productViewers: 1 } }
-      ).populate("productViewers.user", "name email phone");
+      ).populate("productViewers", "name email phone");
 
       if ("_id" in product || "id" in product) {
         return resolve(product.toObject());
@@ -141,7 +137,7 @@ module.exports.updateProduct = async (id, body, projection) => {
         "rating",
         "category",
         "stock",
-        "numOfReviews",
+        "numberOfReviews",
         "isWearAndReturnEnabled",
         "productViewers",
         "brandInfo",

@@ -1,31 +1,19 @@
 const mongoose = require("mongoose");
-const neatMongoose = require("../../util/mongoose-neat.js");
-
 
 const reviewSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.ObjectId,
-      ref: "user",
+      ref: "User",
       required: true,
     },
     productId: {
       type: mongoose.Schema.ObjectId,
-      ref: "product",
+      ref: "Product",
       required: true,
     },
-    name: {
-      type: String,
-      required: true,
-    },
-    rating: {
-      type: Number,
-      required: true,
-    },
-    comment: {
-      type: String,
-      required: true,
-    },
+    rating: { type: Number, required: true },
+    comment: { type: String, required: true },
   },
   {
     toObject: {
@@ -39,6 +27,12 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
-reviewSchema.methods.toJSON = neatMongoose;
+reviewSchema.index({ comment: 1 }, { sparse: true });
+
+reviewSchema.index(
+  { comment: "text" },
+  { weights: { comment: 10 } },
+  { collation: { locale: "en", strength: 2 } }
+);
 
 module.exports = mongoose.model("Review", reviewSchema, "Review");

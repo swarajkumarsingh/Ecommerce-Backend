@@ -56,7 +56,7 @@ module.exports.getMyProfile = async (req, res) => {
   const user = await model.findUserById(userId);
   if (user && "id" in user) {
     return res.successResponse("Fetched My Profile Info", user);
-  } else if (response && "notFound" in response) {
+  } else if (user && "notFound" in user) {
     return res
       .status(404)
       .json({ error: true, message: "No user found with the given id" });
@@ -85,7 +85,7 @@ module.exports.getUser = async (req, res) => {
   const user = await model.findUserById(userId);
   if (user && "id" in user) {
     return res.successResponse("Fetched My Profile Info", user);
-  } else if (response && "notFound" in response) {
+  } else if (user && "notFound" in user) {
     return res
       .status(404)
       .json({ error: true, message: "No user found with the given id" });
@@ -100,7 +100,7 @@ module.exports.getUserRole = async (req, res) => {
     return res.successResponse("User Role Fetched Successfully", {
       role: user.role,
     });
-  } else if (response && "notFound" in response) {
+  } else if (user && "notFound" in user) {
     return res
       .status(404)
       .json({ error: true, message: "No user found with the given id" });

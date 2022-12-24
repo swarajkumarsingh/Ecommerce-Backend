@@ -17,7 +17,7 @@ const router = new express.Router();
 
 // User Routes
 router.post(
-  "/wishlist",
+  "/wishlist/new",
   [
     body("productId", "Invalid Product Id").isMongoId(),
     body("userId", "Invalid User Id").isMongoId(),

@@ -23,7 +23,7 @@ const successResponse = function (message, data, extra = {}) {
   );
 };
 
-const errorResponse = function (message, stCode, extra = {}) {
+const errorResponse = function (stCode, message, extra = {}) {
   return this.status(stCode || statusCode.BAD_REQUEST).send(
     errorResponseGenerator(message, extra)
   );

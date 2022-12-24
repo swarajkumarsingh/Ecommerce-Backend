@@ -21,22 +21,22 @@ module.exports.getAllProduct = async (req, res) => {
 module.exports.getProduct = async (req, res) => {
   const pid = req.params.pid;
   const userId = req.userId;
-  const product = await model.getProductById(userId, pid);
-  if (product && "id" in product) {
-    return res.successResponse("Product fetched successfully", product);
+  const response = await model.getProductById(userId, pid);
+  if (response && "id" in response) {
+    return res.successResponse("Product fetched successfully", response);
   } else if (response && "notFound" in response) {
     return res
       .status(404)
       .json({ error: true, message: "No user found with the given id" });
   }
-  return resolve("Something went wrong");
+  return res.internalErrorResponse("Something went wrong");
 };
 
 module.exports.updateProduct = async (req, res) => {
   const pid = req.params.pid;
-  const product = await model.updateProduct(pid, req.body);
-  if (product && "id" in product) {
-    return res.successResponse("Product fetched successfully", product);
+  const response = await model.updateProduct(pid, req.body);
+  if (response && "id" in response) {
+    return res.successResponse("Product fetched successfully", response);
   } else if (response && "notFound" in response) {
     return res
       .status(404)
@@ -47,10 +47,9 @@ module.exports.updateProduct = async (req, res) => {
 
 module.exports.getProductViews = async (req, res) => {
   const pid = req.params.pid;
-  const product = await model.getProductViews(pid);
-  console.log(product);
-  if (product && "id" in product) {
-    return res.successResponse("Product fetched successfully", product);
+  const response = await model.getProductViews(pid);
+  if (response && "id" in response) {
+    return res.successResponse("Product fetched successfully", response);
   } else if (response && "notFound" in response) {
     return res
       .status(404)

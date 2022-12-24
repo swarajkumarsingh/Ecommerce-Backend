@@ -1,54 +1,46 @@
-// Creating schema and adding creating schema, and passing it to productController
-
 const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
-const productSchema = new mongoose.Schema(
+const productSchema = new Schema(
   {
-    name: {
-      type: String,
-      required: [true, "Please Enter product Name"],
-      trim: true,
-    },
-    description: {
-      type: String,
-      required: [true, "Please Enter product description"],
-    },
+    name: { type: String, required: true },
+    description: { type: String, required: true },
     primaryImage: { type: String, trim: true },
     otherImages: [{ type: String }],
-    gender: { type: String, required: true },
+    productAttributes: { type: Schema.Types.Mixed },
     primaryColor: { type: String },
+    productTags: [String],
+    gender: { type: String, required: true },
+
     mrp: { type: Number, required: true },
     price: { type: Number, required: true },
-    ratings: {
-      type: Number,
-      default: 0,
-    },
-    category: {
-      type: String,
-      required: [true, "Please Enter product category"],
-    },
-    stock: {
-      type: Number,
-      default: 1,
-      required: [true, "Please Enter product Stock"],
-    },
-    numOfReviews: {
-      type: Number,
-      default: 0,
-    },
-    isWearAndReturnEnabled: { type: Boolean, default: false },
-    productViewers: {
-      user: {
-        type: mongoose.Types.ObjectId,
-        ref: "User",
+
+    avgRating: { type: Number, default: 0 },
+    numberOfReviews: { type: Number, default: 0 },
+
+    inventory: [
+      {
+        size: { type: String },
+        items: { type: Number },
+        type: Schema.Types.Mixed,
       },
-    },
+    ],
+
     brandInfo: { type: mongoose.Schema.Types.Mixed },
+    categoryId: { type: Schema.Types.ObjectId, ref: "Category" },
+    categoryName: { type: String },
+    subCategoryId: { type: Schema.Types.ObjectId, ref: "SubCategory" },
+    subCategoryName: { type: String },
+
+    productViewers: [{ type: mongoose.Types.ObjectId, ref: "User" }],
+    stock: { type: Number, default: 1, required: true },
+    isWearAndReturnEnabled: { type: Boolean, default: false },
+
     locationName: { type: String, trim: true },
     location: {
       type: {
-        type: String, // Don't do `{ location: { type: String } }`
-        enum: ["Point"], // 'location.type' must be 'Point'
+        type: String,
+        enum: ["Point"],
         default: "Point",
       },
       coordinates: {
@@ -57,13 +49,7 @@ const productSchema = new mongoose.Schema(
       },
     },
 
-    createdBy: {
-      type: mongoose.Types.ObjectId,
-    },
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
+    createdBy: { type: mongoose.Types.ObjectId },
   },
   {
     toObject: {
@@ -86,6 +72,7 @@ const productSchema = new mongoose.Schema(
         return ret;
       },
     },
+    timestamps: true,
   }
 );
 
