@@ -1,16 +1,15 @@
 const mongoose = require("mongoose");
-const neatMongoose = require("../../util/mongoose-neat.js");
 
 const orderSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.ObjectId,
-      ref: "user",
+      ref: "User",
       required: true,
     },
     productId: {
       type: mongoose.Schema.ObjectId,
-      ref: "product",
+      ref: "Product",
       required: true,
     },
     price: {
@@ -33,7 +32,7 @@ const orderSchema = new mongoose.Schema(
       },
       city: {
         type: String,
-        required: true,
+        required: true, 
       },
 
       state: {
@@ -66,7 +65,5 @@ const orderSchema = new mongoose.Schema(
     },
   }
 );
-
-orderSchema.methods.toJSON = neatMongoose;
 
 module.exports = mongoose.model("Order", orderSchema, "Order");

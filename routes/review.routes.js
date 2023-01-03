@@ -4,6 +4,9 @@ const {
   createReview,
   deleteReview,
   getAllReviews,
+  getReview,
+  deleteAllReviews,
+  updateReview,
 } = require("../controller/review.controller.js");
 const { authorizeRoles } = require("../util/middlewares/auth.js");
 
@@ -35,11 +38,24 @@ router.post(
 );
 
 router.get("/reviews", authorizeRoles("admin"), getAllReviews);
+router.get(
+  "/review/:rid",
+  [param("rid", "Invalid reviewId").isMongoId(), requestValidator],
+  getReview
+);
+
+router.patch(
+  "/review/:rid",
+  [param("rid", "Invalid reviewId").isMongoId(), requestValidator],
+  updateReview
+);
 
 router.delete(
   "/review/:rid",
   [param("rid", "Invalid reviewId").isMongoId(), requestValidator],
   deleteReview
 );
+
+router.delete("/reviews", deleteAllReviews);
 
 module.exports = router;

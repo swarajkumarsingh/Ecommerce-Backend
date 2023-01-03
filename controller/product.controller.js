@@ -1,5 +1,8 @@
 const model = require("../model/product.model.js");
 
+// res.errorResponse(400, review.already);
+// res.notFoundResponse(review.notFound);
+
 module.exports.createProduct = async (req, res) => {
   const product = await model.createProduct(req);
   if (product && "id" in product) {
@@ -25,9 +28,7 @@ module.exports.getProduct = async (req, res) => {
   if (response && "id" in response) {
     return res.successResponse("Product fetched successfully", response);
   } else if (response && "notFound" in response) {
-    return res
-      .status(404)
-      .json({ error: true, message: "No user found with the given id" });
+    return res.notFoundResponse(response.notFound);
   }
   return res.internalErrorResponse("Something went wrong");
 };
@@ -36,11 +37,9 @@ module.exports.updateProduct = async (req, res) => {
   const pid = req.params.pid;
   const response = await model.updateProduct(pid, req.body);
   if (response && "id" in response) {
-    return res.successResponse("Product fetched successfully", response);
+    return res.successResponse("Product updated successfully", response);
   } else if (response && "notFound" in response) {
-    return res
-      .status(404)
-      .json({ error: true, message: "No user found with the given id" });
+    return res.notFoundResponse(response.notFound);
   }
   return res.internalErrorResponse("Something went wrong");
 };
@@ -51,9 +50,7 @@ module.exports.getProductViews = async (req, res) => {
   if (response && "id" in response) {
     return res.successResponse("Product fetched successfully", response);
   } else if (response && "notFound" in response) {
-    return res
-      .status(404)
-      .json({ error: true, message: "No user found with the given id" });
+    return res.notFoundResponse(response.notFound);
   }
   return res.internalErrorResponse("Something went wrong");
 };
@@ -64,9 +61,7 @@ module.exports.deleteProduct = async (req, res) => {
   if (response && "deletedCount" in response) {
     return res.successResponse(`User deleted successfully`);
   } else if (response && "notFound" in response) {
-    return res
-      .status(404)
-      .json({ error: true, message: "No user found with the given id" });
+    return res.notFoundResponse(response.notFound);
   }
   res.internalErrorResponse("Something went wrong", response.error);
 };

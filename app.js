@@ -2,12 +2,12 @@
 
 const express = require("express");
 const morgan = require("morgan");
+
 require("dotenv").config({ path: "./env" });
+const fakeAuthorizer = require("./util/fake-authorizer.js");
 
 const connectDb = require("./db/connect");
 const responseware = require("./util/middlewares/middelwares.js");
-const fakeAuthorizer = require("./util/fake-authorizer.js");
-const errorMiddleware = require("./util/middlewares/error.js");
 const { paginateParams } = require("./util/middlewares/request-sanitize.js");
 
 const app = express();
@@ -38,7 +38,5 @@ app.use("/api/v1", orderRoute);
 app.use("/api/v1", reviewRoute);
 app.use("/api/v1", productRoute);
 app.use("/api/v1", wishlistRoute);
-
-app.use(errorMiddleware);
 
 module.exports = app;

@@ -7,10 +7,10 @@ const productSchema = new Schema(
     description: { type: String, required: true },
     primaryImage: { type: String, trim: true },
     otherImages: [{ type: String }],
-    productAttributes: { type: Schema.Types.Mixed },
-    primaryColor: { type: String },
     productTags: [String],
     gender: { type: String, required: true },
+    primaryColor: { type: String },
+    productAttributes: { type: Schema.Types.Mixed },
 
     mrp: { type: Number, required: true },
     price: { type: Number, required: true },

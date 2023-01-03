@@ -1,5 +1,7 @@
 const Review = require("../db/model/Review.js");
 const Product = require("../db/model/Product.js");
+const productModel = require("../model/product.model.js");
+const mongoose = require("mongoose");
 
 module.exports.createReview = async (body) => {
   return new Promise(async (resolve) => {
@@ -11,20 +13,12 @@ module.exports.createReview = async (body) => {
         productId
       );
 
-      if (reviewExists) {
-        return resolve({ already: "Review Already Exists" });
-      }
+      const productExists = await productModel.checkIfProductExists(productId);
 
-      // TODO: update average rating in product schema
-      const productReviewCount = await Product.updateOne(
-        { _id: productId },
-        { $inc: { numberOfReviews: 1 } },
-        { new: true }
-      );
+      if (reviewExists) return resolve({ already: "Review Already Exists" });
 
-      if (productReviewCount == null) {
-        return resolve({ error: "Error updating product review count" });
-      }
+      if (productExists == false)
+        return resolve({ notFound: "Product Not found" });
 
       const user = await Review.create({
         userId,
@@ -32,6 +26,28 @@ module.exports.createReview = async (body) => {
         rating,
         comment,
       });
+
+      // Calculate Average Rating
+      let avgRating = await Review.aggregate([
+        {
+          $match: {
+            productId: new mongoose.Types.ObjectId(productId),
+          },
+        },
+        { $group: { _id: "$productId", avgRating: { $avg: "$rating" } } },
+      ]);
+      avgRating = avgRating[0].avgRating;
+
+      // Update AvgRating in Product
+      await Product.updateOne(
+        { _id: new mongoose.Types.ObjectId(productId) },
+        {
+          $set: {
+            avgRating,
+          },
+          $inc: { numberOfReviews: 1 },
+        }
+      );
 
       return resolve(user.toObject());
     } catch (error) {
@@ -50,6 +66,31 @@ module.exports.deleteReview = async (rid) => {
       return review;
     }
     return { notFound: "Review not found" };
+  } catch (error) {
+    return { error };
+  }
+};
+
+module.exports.getReview = async (rid) => {
+  try {
+    const review = await Review.findOne(
+      { _id: rid },
+      { projection: { __v: 0 } }
+    );
+    if (review && "id" in review) {
+      return review.toObject();
+    }
+    return { notFound: "Review not found" };
+  } catch (error) {
+    return { error };
+  }
+};
+
+module.exports.deleteAllReviews = async () => {
+  try {
+    const review = await Review.deleteMany();
+    if (review == null) return { error: "Error while deleting all reviews" };
+    return review;
   } catch (error) {
     return { error };
   }
@@ -82,6 +123,38 @@ module.exports.getAllReviews = async (search, page, limit) => {
       );
       const review = await Review.aggregate(query);
       return resolve(review);
+    } catch (error) {
+      resolve({ error });
+    }
+  });
+};
+
+module.exports.updateReview = async (id, body, projection) => {
+  return new Promise(async (resolve) => {
+    try {
+      const updateExpression = {};
+      // Validate the incoming data
+      const fieldsToUpdate = ["rating", "comment"];
+
+      for (const field of fieldsToUpdate) {
+        if (fieldsToUpdate.includes(field)) {
+          updateExpression[field] = body[field];
+        }
+      }
+
+      const updatedResult = await Review.findOneAndUpdate(
+        { _id: new mongoose.Types.ObjectId(id) },
+        updateExpression,
+        {
+          new: true,
+          projection: projection || {},
+        }
+      );
+      if (updatedResult && "id" in updatedResult) {
+        return resolve(updatedResult.toObject());
+      }
+
+      return resolve({ notFound: `Review not found` });
     } catch (error) {
       resolve({ error });
     }

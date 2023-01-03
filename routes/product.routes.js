@@ -43,8 +43,7 @@ router.post(
 );
 
 router.get("/product/:pid", [
-  param("pid", "Invalid ProductId").isMongoId(),
-  requestValidator,
+  [param("pid", "Invalid userId").isMongoId(), requestValidator],
   getProduct,
 ]);
 
