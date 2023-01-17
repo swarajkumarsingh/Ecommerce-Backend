@@ -1,11 +1,19 @@
 /* eslint-disable require-jsdoc */
-const User = require("../../db/model/User.js");
+const fs = require("fs");
+const path = require("path");
 const mongoose = require("mongoose");
-const users = require("../../_data/user.mock.js");
-mongoose.set("strictQuery", true);
 require("colors");
 
-// connect mongoose
+const User = require("../../db/model/User.js");
+
+// Warning's = false
+mongoose.set("strictQuery", true);
+
+// Read User data from user.mock.json file
+const dataPath = path.join(__filename, "../../../_data/user.mock.json");
+const users = JSON.parse(fs.readFileSync(dataPath, "utf8"));
+
+// Connect mongoose
 mongoose
   .connect("mongodb://localhost:27017/Ecommerce-Backend", {
     useNewUrlParser: true,
@@ -17,12 +25,12 @@ mongoose
   })
   .then(() => {});
 
-// Read JSON files
-// ...
+// Create Users
 async function importData() {
   try {
     users.map(async (p, index) => {
-      await User.create(p);
+      new User({ p }).save();
+
       if (index === users.length - 1) {
         console.log("Data Imported...".green.inverse);
         process.exit(1);
@@ -33,6 +41,7 @@ async function importData() {
   }
 }
 
+// Delete All Users
 async function deleteData() {
   try {
     await User.deleteMany();
@@ -43,6 +52,7 @@ async function deleteData() {
     process.exit();
   }
 }
+
 // Setting flag for running the function
 if (process.argv[2] === "-i") {
   importData();

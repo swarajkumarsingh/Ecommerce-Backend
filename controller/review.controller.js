@@ -37,7 +37,6 @@ module.exports.getReview = async (req, res) => {
 module.exports.updateReview = async (req, res) => {
   const rid = req.params.rid;
   const response = await model.updateReview(rid, req.body);
-  console.log(response);
   if (response && "id" in response) {
     return res.successResponse("Review updated successfully", response);
   } else if (response && "notFound" in response) {

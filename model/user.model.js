@@ -8,7 +8,7 @@ module.exports.createUser = async (body) => {
 
       const userExists = await this.findUserByEmail(email);
       if (userExists && "id" in userExists) {
-      return resolve({ already: `No User found with the id` });
+        return resolve({ already: `User found with the id` });
       }
 
       const user = await new User({
@@ -67,7 +67,17 @@ module.exports.updateUser = async (userId, body, projection) => {
     try {
       const updateExpression = {};
       // Validate the incoming data
-      const fieldsToUpdate = ["name", "email", "password", "email", "avatar"];
+      const fieldsToUpdate = [
+        "name",
+        "email",
+        "avatar",
+        "password",
+        "addresses",
+        "location",
+        "fullAddress",
+        "locationName",
+        "otherLocationData",
+      ];
       for (const field of fieldsToUpdate) {
         if (fieldsToUpdate.includes(field)) {
           updateExpression[field] = body[field];
@@ -126,7 +136,11 @@ module.exports.updateUserByAdmin = async (userId, body, projection) => {
       }
 
       if ("email" in body) {
-        // Verify Email
+        const userExits = this.userExistsWithEmail(email);
+
+        if (userExits) {
+          return { already: "User already exists, with this email." };
+        }
       }
 
       const updatedResult = await User.findOneAndUpdate(

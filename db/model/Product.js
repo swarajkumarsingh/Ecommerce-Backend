@@ -26,6 +26,7 @@ const productSchema = new Schema(
       },
     ],
 
+    occasionType: { type: String, default: "Party", trim: true },
     brandInfo: { type: mongoose.Schema.Types.Mixed },
     categoryId: { type: Schema.Types.ObjectId, ref: "Category" },
     categoryName: { type: String },

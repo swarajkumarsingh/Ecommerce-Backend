@@ -1,8 +1,5 @@
 const model = require("../model/product.model.js");
 
-// res.errorResponse(400, review.already);
-// res.notFoundResponse(review.notFound);
-
 module.exports.createProduct = async (req, res) => {
   const product = await model.createProduct(req);
   if (product && "id" in product) {

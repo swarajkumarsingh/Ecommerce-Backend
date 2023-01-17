@@ -1,26 +1,15 @@
 const mongoose = require("mongoose");
-const neatMongoose = require("../../util/mongoose-neat.js");
 
 const couponSchema = new mongoose.Schema(
   {
     productId: {
       type: mongoose.Schema.ObjectId,
-      ref: "product",
+      ref: "Product",
       required: true,
     },
-    userId: {
-      type: mongoose.Schema.ObjectId,
-      ref: "product",
-      required: true,
-    },
-    princeMinus: {
-      type: Number,
-      ref: "product",
-    },
-    createdOn: {
-      type: Number,
-      ref: Date.now,
-    },
+    createdBy: { type: mongoose.Schema.ObjectId, ref: "User", required: true },
+    princeMinus: { type: Number, required: true },
+    createdOn: { type: Number, default: Date.now },
   },
   {
     toObject: {
@@ -34,6 +23,4 @@ const couponSchema = new mongoose.Schema(
   }
 );
 
-couponSchema.methods.toJSON = neatMongoose;
-
-module.exports = mongoose.model("favourite", couponSchema, "favourite");
+module.exports = mongoose.model("Coupon", couponSchema, "Coupon");

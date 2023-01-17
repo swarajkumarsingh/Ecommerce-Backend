@@ -10,7 +10,7 @@ module.exports.neatMongoose = function () {
     delete obj[field];
   }
 
-  // Re format coordinates
+  // Re-format coordinates
   if (
     "location" in obj &&
     "type" in obj.location &&

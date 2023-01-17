@@ -4,11 +4,11 @@ const mongoose = require("mongoose");
 mongoose.set("strictQuery", true);
 mongoose.Promise = global.Promise;
 
-// const mongoUri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_URL}/${process.env.DB_NAME}?retryWrites=true&w=majority`;
+// eslint-disable-next-line no-unused-vars
+const mongoAtlasUri = process.env.DB_URL;
 
-// const mongoUri =
-  // "mongodb+srv://swaraj:9PHGznxSFnKLRlmg@cluster0.9qzb8lu.mongodb.net/?retryWrites=true&w=majority";
-const mongoUri = "mongodb://localhost:27017/Ecommerce-Backend";
+// TODO: Change Mongo URI ( URI Exposed in Github )
+const mongoLocalUri = "mongodb://localhost:27017/Ecommerce-Backend";
 
 let isConnected;
 let isDbConnectionRequested = false;
@@ -27,9 +27,9 @@ module.exports = connectToDatabase = async () => {
   console.log("=> using new database connection");
   isDbConnectionRequested = true;
   return mongoose
-    .connect(mongoUri, {
+    .connect(mongoLocalUri, {
       useUnifiedTopology: true,
-      useNewUrlParser: true,  
+      useNewUrlParser: true,
     })
     .then((db) => {
       isConnected = db.connections[0].readyState;

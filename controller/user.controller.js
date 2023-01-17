@@ -18,9 +18,9 @@ module.exports.updateProfile = async (req, res) => {
   if (response && "data" in response) {
     return res.successResponse("Account Updated", response.data);
   } else if (response && "notFound" in response) {
-    return res
-      .status(404)
-      .json({ error: true, message: "No user found with the given id" });
+    return res.notFoundResponse(response.notFound);
+  } else if (response && "already" in response) {
+    return res.errorResponse(res.already, 401);
   }
   res.internalErrorResponse("Something went wrong");
 };

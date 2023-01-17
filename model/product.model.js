@@ -1,6 +1,11 @@
 const Product = require("../db/model/Product.js");
 const mongoose = require("mongoose");
 
+// TODO: Trending Products
+// TODO: Products from your search
+// TODO: Most ordered Products
+// TODO: Products with highest ratings
+
 module.exports.createProduct = async (req) => {
   return new Promise(async (resolve) => {
     try {
@@ -205,6 +210,6 @@ module.exports.deleteProduct = async (id, projection) => {
 module.exports.checkIfProductExists = async (productId) => {
   const product = await Product.findOne({
     _id: new mongoose.Types.ObjectId(productId),
-  });
+  }, {_id: 0, name:1});
   return product != null ? true : false;
 };

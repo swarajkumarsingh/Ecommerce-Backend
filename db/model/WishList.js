@@ -2,20 +2,13 @@ const mongoose = require("mongoose");
 
 const whishListSchema = new mongoose.Schema(
   {
-    userId: {
-      type: mongoose.Schema.ObjectId,
-      ref: "User",
-      required: true,
-    },
+    userId: { type: mongoose.Schema.ObjectId, ref: "User", required: true },
     productId: {
       type: mongoose.Schema.ObjectId,
       ref: "Product",
       required: true,
     },
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
+    createdAt: { type: Date, default: Date.now },
   },
   {
     toObject: {

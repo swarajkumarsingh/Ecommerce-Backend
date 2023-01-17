@@ -35,6 +35,12 @@ const notFoundResponse = function (message, extra = {}) {
   );
 };
 
+const alreadyExistsResponse = function (message, extra = {}) {
+  return this.status(statusCode.ALREADY_EXISTS).send(
+    errorResponseGenerator(message, extra)
+  );
+};
+
 const internalErrorResponse = function (message, extra = {}) {
   return this.status(statusCode.SOMETHING_WENT_WRONG).send(
     errorResponseGenerator(message, extra)
@@ -46,6 +52,7 @@ module.exports = (express) => {
     express.response.successResponse = successResponse;
     express.response.errorResponse = errorResponse;
     express.response.notFoundResponse = notFoundResponse;
+    express.response.alreadyExistsResponse = alreadyExistsResponse;
     express.response.internalErrorResponse = internalErrorResponse;
     next();
   };

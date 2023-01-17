@@ -34,5 +34,17 @@
     "category": "Cloth",
     "stock": "200",
     "isWearAndReturnEnabled": "true"
+  },
+  {
+    "name": "Puma Mens Maximal Comfort-everglide Range Walking Shoe",
+    "description": "Wonderful shoes",
+    "brandInfo": "Puma",
+    "gender": "male",
+    "primaryColor": "black",
+    "price": "9999",
+    "mrp": "1300",
+    "category": "Cloth",
+    "stock": "200",
+    "isWearAndReturnEnabled": "true"
   }
 ]

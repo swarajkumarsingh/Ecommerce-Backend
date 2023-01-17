@@ -1,26 +1,20 @@
 /* eslint-disable require-jsdoc */
 const Product = require("../../db/model/Product.js");
 const mongoose = require("mongoose");
-const products = require("../../_data/product.mock.js");
+// const products = require("../../_data/product.mock.js");
 mongoose.set("strictQuery", true);
 require("colors");
+const fs = require("fs");
+const path = require("path");
 
-// connect mongoose
-mongoose
-  .connect("mongodb://localhost:27017/Ecommerce-Backend", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .catch((err) => {
-    console.log(err.stack);
-    process.exit(1);
-  })
-  .then(() => {});
+const dataPath = path.join(__filename, "../../../_data/product.mock.json");
+
+const products = JSON.parse(fs.readFileSync(dataPath, "utf8"));
 
 async function importData() {
   try {
     products.map(async (p, index) => {
-      await Product.create(p);
+      new Product({p}).save();
       if (index === products.length - 1) {
         console.log("Data Imported...".green.inverse);
         process.exit(1);
@@ -37,7 +31,7 @@ async function deleteData() {
     console.log("Data Destroyed...".red.inverse);
     process.exit();
   } catch (err) {
-    console.error(err);
+    console.error(err.red.inverse);
     process.exit();
   }
 }
@@ -46,4 +40,7 @@ if (process.argv[2] === "-i") {
   importData();
 } else if (process.argv[2] === "-d") {
   deleteData();
+} else {
+  console.log("No flag found".red.inverse);
+  process.exit(0);
 }

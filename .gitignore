@@ -1,5 +1,6 @@
 node_modules
 .env
-eco-backend-818d1-firebase-adminsdk-20qbl-8335d11883.json
+firebase_sdk.json
 temp.js
 multitask.js
+.vscode

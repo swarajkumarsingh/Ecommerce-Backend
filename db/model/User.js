@@ -2,38 +2,12 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
-      required: true,
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
-    phone: {
-      type: Number,
-    },
-    // cloudinary
-    avatar: {
-      public_id: {
-        type: String,
-        default: "default ID",
-      },
-      url: {
-        type: String,
-        default: "default URL",
-      },
-    },
-    role: {
-      type: String,
-      enum: ["user", "admin"],
-      default: "user",
-    },
+    name: { type: String },
+    email: { type: String, unique: true },
+    password: { type: String },
+    phone: { type: Number, required: true },
+    avatar: { type: String, default: "" },
+    role: { type: String, enum: ["user", "admin"], default: "user" },
     addresses: [
       {
         receiverName: { type: String, trim: true },
@@ -96,7 +70,7 @@ userSchema.index({ email: 1 }, { unique: true, sparse: true });
 
 userSchema.index(
   { name: "text", email: "text" },
-  { weights: { name: 10, username: 6 } },
+  { weights: { name: 10, email: 6 } },
   { collation: { locale: "en", strength: 2 } }
 );
 
