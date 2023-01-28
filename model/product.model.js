@@ -208,8 +208,12 @@ module.exports.deleteProduct = async (id, projection) => {
 };
 
 module.exports.checkIfProductExists = async (productId) => {
-  const product = await Product.findOne({
-    _id: new mongoose.Types.ObjectId(productId),
-  }, {_id: 0, name:1});
+  const product = await Product.findOne(
+    {
+      _id: new mongoose.Types.ObjectId(productId),
+    },
+    { _id: 0, name: 1 }
+  );
+
   return product != null ? true : false;
 };

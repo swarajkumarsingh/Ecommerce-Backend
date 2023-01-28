@@ -34,7 +34,7 @@ const productSchema = new Schema(
     subCategoryName: { type: String },
 
     productViewers: [{ type: mongoose.Types.ObjectId, ref: "User" }],
-    stock: { type: Number, default: 1, required: true },
+    stock: { type: Number, default: 100 },
     isWearAndReturnEnabled: { type: Boolean, default: false },
 
     locationName: { type: String, trim: true },

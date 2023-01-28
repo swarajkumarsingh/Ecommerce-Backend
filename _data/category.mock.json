@@ -1,0 +1,29 @@
+[
+  {
+    "name": "Fashion",
+    "description": "This is a fashion category",
+    "image": "https://cdn.shopify.com/s/files/1/2482/1950/files/rts_853f9efd-c149-47a8-810d-23a3948985b7_768x.jpg?v=1659451049",
+    "gender": "male",
+    "createdBy": "63b8541f4944ae3126d99ebd"
+  },
+  {
+    "name": "Indian",
+    "description": "This is a Indian category",
+    "image": "https://m.media-amazon.com/images/I/91g-TtHKfkL._UY550_.jpg",
+    "gender": "female",
+    "createdBy": "63b8541f4944ae3126d99ebd"
+  },
+  {
+    "name": "Western",
+    "description": "This is a Western category",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/f/fc/Bourgeois_de_Lyon_XVIe_Gaigni%C3%A8res.jpg",
+    "gender": "unisex",
+    "createdBy": "63b8541f4944ae3126d99ebd"
+  },
+  {
+    "name": "French",
+    "description": "This is a French category",
+    "image": "https://cdn.shopify.com/s/files/1/2482/1950/files/rts_853f9efd-c149-47a8-810d-23a3948985b7_768x.jpg?v=1659451049",
+    "createdBy": "63b8541f4944ae3126d99ebd"
+  }
+]

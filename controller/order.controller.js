@@ -2,9 +2,7 @@ const model = require("../model/order.model.js");
 
 module.exports.create_order = async (req, res) => {
   const userId = req.userId;
-  const addressId = req.body.addressId;
-  const products = req.body.products;
-  const response = await model.create_order(userId, addressId, products);
+  const response = await model.create_order(userId, req.body);
   if (response && "data" in response) {
     return res.successResponse("Order created successfully", response);
   } else if (response && "notFound" in response) {

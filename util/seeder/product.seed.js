@@ -1,7 +1,7 @@
 /* eslint-disable require-jsdoc */
 const Product = require("../../db/model/Product.js");
 const mongoose = require("mongoose");
-// const products = require("../../_data/product.mock.js");
+// const connectToDatabase = require("../../db/connect.js")
 mongoose.set("strictQuery", true);
 require("colors");
 const fs = require("fs");
@@ -11,17 +11,59 @@ const dataPath = path.join(__filename, "../../../_data/product.mock.json");
 
 const products = JSON.parse(fs.readFileSync(dataPath, "utf8"));
 
+// mongoose
+//   .connect("mongodb://localhost:27017/Ecommerce-Backend", {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//   })
+//   .catch((err) => {
+//     console.log(err.stack);
+//     process.exit(1);
+//   })
+//   .then(() => {});
+
+async function dB() {
+  try {
+    await mongoose.connect("mongodb://localhost:27017/Ecommerce-Backend");
+  } catch (error) {
+    console.log(":(", error);
+  }
+}
+
+dB();
+
 async function importData() {
   try {
     products.map(async (p, index) => {
-      new Product({p}).save();
-      if (index === products.length - 1) {
-        console.log("Data Imported...".green.inverse);
-        process.exit(1);
-      }
+      // await Product.create({p})
+      new Product({
+        name: p.name,
+        description: p.description,
+        brandInfo: p.brandInfo,
+        primaryColor: p.primaryColor,
+        gender: p.gender,
+        category: p.category,
+        isWearAndReturnEnabled: p.isWearAndReturnEnabled,
+        mrp: p.mrp,
+        price: p.price,
+        stock: p.stock,
+      })
+        .save()
+        .then(async () => {
+          const pDucts = await Product.countDocuments();
+          if (Number(pDucts) > 0) {
+            console.log("Data Imported...".green.inverse);
+            process.exit(1);
+          } else {
+            console.log("Unexpected error occurred :(".red.inverse);
+            process.exit(0);
+          }
+        });
     });
   } catch (error) {
+    console.log(error);
     console.log("Error while importing data".red.inverse);
+    process.exit(0);
   }
 }
 

@@ -2,11 +2,12 @@
 const mongoose = require("mongoose");
 const Razorpay = require("razorpay");
 
-const Order = require("../db/model/Order.js");
-const Product = require("../db/model/Product.js");
 const User = require("../db/model/User.js");
+const Order = require("../db/model/Order.js");
+const Coupon = require("../db/model/Coupon.js");
+const Product = require("../db/model/Product.js");
 
-const sendEmail = require("./../util/sendMail.js")
+const sendEmail = require("./../util/sendMail.js");
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID_TEST,
@@ -205,9 +206,11 @@ module.exports.get_orders_of_user = async (id, page, limit) => {
   }
 };
 
-module.exports.create_order = (userId, addressId, products) => {
+module.exports.create_order = (userId, body) => {
   return new Promise(async (resolve) => {
     try {
+      const { addressId, products } = body;
+
       // Check if Valid Product data was sent
       const userExists = await this.findIfUserAlreadyExists(userId);
       if (!userExists) return resolve({ notFound: "User Not Found" });
@@ -283,6 +286,46 @@ module.exports.create_order = (userId, addressId, products) => {
               .toString()
               .substr(-12)}_${new Date().getTime()}`,
           };
+
+          if ("coupon" in body) {
+            // ? Validate Coupon and decrease the amount
+            const coupon = await Coupon.findOne({ code: req.body.coupon.code });
+            console.log("coupon", coupon);
+
+            // check 1: !coupon : Invalid coupon code
+            if (!coupon) {
+              return resolve({ error: "Invalid coupon code" });
+            }
+
+            // check 2: coupon.expiration < Date.now() : Coupon has expired
+            if (coupon.expiration < Date.now()) {
+              return resolve({ error: "Coupon has expired" });
+            }
+
+            // check 3: coupon.uses >= coupon.maxUses : Coupon has reached its maximum uses
+            if (coupon.uses >= coupon.maxUses) {
+              return resolve({
+                error: "Coupon has reached its maximum uses",
+              });
+            }
+
+            // If discount if greater than amount
+            if (coupon.discount > options["amount"]) {
+              // return resolve({ error: "Invalid coupon discount" });
+            }
+
+            // decrease discount amount from options.amount
+            options["amount"] =
+              Number(options["amount"]) - Number(coupon.discount);
+
+            // UPDATE: uses:{$incr: 1}
+            await Coupon.updateOne(
+              { code: req.body.coupon.code },
+              {
+                $inc: { uses: 1 },
+              }
+            );
+          }
 
           const productsToSave = validProducts.map((product) => {
             return {

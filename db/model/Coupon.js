@@ -1,15 +1,15 @@
 const mongoose = require("mongoose");
 
+// const days = 100;
+
 const couponSchema = new mongoose.Schema(
   {
-    productId: {
-      type: mongoose.Schema.ObjectId,
-      ref: "Product",
-      required: true,
-    },
+    code: { type: String, required: true, unique: true },
+    discount: { type: Number, required: true },
+    uses: { type: Number, default: 0 },
+    maxUses: { type: Number, default: 1000 },
+    createdOn: { type: Date, default: Date.now },
     createdBy: { type: mongoose.Schema.ObjectId, ref: "User", required: true },
-    princeMinus: { type: Number, required: true },
-    createdOn: { type: Number, default: Date.now },
   },
   {
     toObject: {
@@ -22,5 +22,8 @@ const couponSchema = new mongoose.Schema(
     },
   }
 );
+
+couponSchema.index({ code: 1 }, { unique: true, sparse: true });
+couponSchema.index({ code: "text" });
 
 module.exports = mongoose.model("Coupon", couponSchema, "Coupon");

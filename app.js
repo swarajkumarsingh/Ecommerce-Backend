@@ -4,7 +4,6 @@ const cors = require("cors");
 const morgan = require("morgan");
 const express = require("express");
 
-require("dotenv").config({ path: "./env" });
 const fakeAuthorizer = require("./util/fake-authorizer.js");
 
 const connectDb = require("./db/connect.js");
@@ -32,8 +31,10 @@ const userRoute = require("./routes/user.routes.js");
 const cartRoute = require("./routes/cart.routes.js");
 const orderRoute = require("./routes/order.routes.js");
 const reviewRoute = require("./routes/review.routes.js");
+const couponRoute = require("./routes/coupon.routes.js");
 const accountRoute = require("./routes/account.routes.js");
 const productRoute = require("./routes/product.routes.js");
+const categoryRoute = require("./routes/category.routes.js");
 const wishlistRoute = require("./routes/wishlist.routes.js");
 
 app.use(fakeAuthorizer); // All Rest APIs require Authentication
@@ -45,7 +46,9 @@ app.use("/api/v1", userRoute);
 app.use("/api/v1", cartRoute);
 app.use("/api/v1", orderRoute);
 app.use("/api/v1", reviewRoute);
+app.use("/api/v1", couponRoute);
 app.use("/api/v1", productRoute);
 app.use("/api/v1", wishlistRoute);
+app.use("/api/v1", categoryRoute);
 
 module.exports = app;

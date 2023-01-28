@@ -136,7 +136,7 @@ module.exports.updateUserByAdmin = async (userId, body, projection) => {
       }
 
       if ("email" in body) {
-        const userExits = this.userExistsWithEmail(email);
+        const userExits = this.userExistsWithEmail(body.email);
 
         if (userExits) {
           return { already: "User already exists, with this email." };

@@ -5,10 +5,10 @@ mongoose.set("strictQuery", true);
 mongoose.Promise = global.Promise;
 
 // eslint-disable-next-line no-unused-vars
-const mongoAtlasUri = process.env.DB_URL;
+// const mongoURL = process.env.DB_URL;
 
 // TODO: Change Mongo URI ( URI Exposed in Github )
-const mongoLocalUri = "mongodb://localhost:27017/Ecommerce-Backend";
+const mongoURL = "mongodb://localhost:27017/Ecommerce-Backend";
 
 let isConnected;
 let isDbConnectionRequested = false;
@@ -27,7 +27,7 @@ module.exports = connectToDatabase = async () => {
   console.log("=> using new database connection");
   isDbConnectionRequested = true;
   return mongoose
-    .connect(mongoLocalUri, {
+    .connect(mongoURL, {
       useUnifiedTopology: true,
       useNewUrlParser: true,
     })

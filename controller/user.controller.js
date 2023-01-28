@@ -113,7 +113,7 @@ module.exports.getUsers = async (req, res) => {
   const { page, limit } = req.query;
   const users = await model.getUsers(search, page, limit);
   if (users && Array.isArray(users)) {
-    return res.successResponse("Users fetched successfully.", users);
+    return res.successResponse("All Users fetched successfully.", users);
   }
   res.internalErrorResponse("Something went wrong");
 };
