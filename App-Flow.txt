@@ -1,0 +1,34 @@
+seller login 
+	--> List Stores
+		--> Store A
+		--> Store B
+
+		< Store >
+		--> Create Store
+		--> Get All Stores
+		--> Get Single Store
+		--> Get earning of single Store
+		--> Update Store
+		--> Delete Store
+
+		< Security - Admin >
+		--> Check if store is valid ( after store is valid, then we can proceed to list products from shop)
+		--> Store Not Valid ( restrict store to upload products & delete store existing products )
+
+		< Product >
+		--> Create Product from Store
+		--> Get All Products from single Stores
+		--> Get All Products of all Store (get products of seller)	
+		--> Get All nearby Store of seller
+		--> Update Products created from Store ( isAvailable, inStock )
+		--> Delete Product from Store
+
+	< Seller Profile >
+	--> Get Seller Profile
+	--> Get All Products from All Store
+	--> Get Total earnings from all Stores
+	--> Update seller profile
+	--> Delete Seller profile ( delete all Stores createdBy seller )
+
+
+Seller --> Create Store --> Go thorough security checks --> List Product

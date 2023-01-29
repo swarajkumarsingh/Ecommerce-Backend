@@ -36,6 +36,7 @@ const accountRoute = require("./routes/account.routes.js");
 const productRoute = require("./routes/product.routes.js");
 const categoryRoute = require("./routes/category.routes.js");
 const wishlistRoute = require("./routes/wishlist.routes.js");
+const promoBannerRoute = require("./routes/promoBanner.routes.js");
 
 app.use(fakeAuthorizer); // All Rest APIs require Authentication
 
@@ -50,5 +51,6 @@ app.use("/api/v1", couponRoute);
 app.use("/api/v1", productRoute);
 app.use("/api/v1", wishlistRoute);
 app.use("/api/v1", categoryRoute);
+app.use("/api/v1", promoBannerRoute);
 
 module.exports = app;

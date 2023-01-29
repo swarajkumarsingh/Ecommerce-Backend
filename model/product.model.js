@@ -95,6 +95,27 @@ module.exports.getProductViews = async (id) => {
   });
 };
 
+module.exports.getTopRatedProducts = async () => {
+  return new Promise(async (resolve) => {
+    try {
+      const products = await Product.aggregate([
+        { $sort: { avgRating: -1 } },
+        { $limit: 10 },
+      ]);
+
+      console.log(products);
+
+      if (!products || !Arrays.isArray(products)) {
+        return resolve({ notFound: "Error while fetching top rated products" });
+      }
+
+      return resolve(products);
+    } catch (error) {
+      resolve({ error });
+    }
+  });
+};
+
 module.exports.getAllProduct = async (search, page, limit) => {
   return new Promise(async (resolve) => {
     try {

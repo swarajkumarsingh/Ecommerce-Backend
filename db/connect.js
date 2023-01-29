@@ -4,10 +4,10 @@ const mongoose = require("mongoose");
 mongoose.set("strictQuery", true);
 mongoose.Promise = global.Promise;
 
-// eslint-disable-next-line no-unused-vars
-// const mongoURL = process.env.DB_URL;
 
 // TODO: Change Mongo URI ( URI Exposed in Github )
+// const mongoURL = process.env.DB_URL;
+
 const mongoURL = "mongodb://localhost:27017/Ecommerce-Backend";
 
 let isConnected;
