@@ -4,6 +4,7 @@ const Razorpay = require("razorpay");
 
 const User = require("../db/model/User.js");
 const Order = require("../db/model/Order.js");
+const Cart = require("../db/model/Cart.js");
 const Coupon = require("../db/model/Coupon.js");
 const Product = require("../db/model/Product.js");
 
@@ -33,122 +34,17 @@ module.exports.verifyOrderPurchase = async (
   signature
 ) => {
   return new Promise(async (resolve) => {
-    // Find the Specific Order
-    const orderData = await Order.findOne(
-      {
-        _id: new mongoose.Types.ObjectId(orderId),
-        userId: new mongoose.Types.ObjectId(userId),
-      },
-      { paymentInfo: 1, totalPrice: 1, products: 1, deliveryAddressId: 1 }
-    );
+    const sessionMongo = await mongoose.startSession();
+    sessionMongo.startTransaction();
 
-    if (
-      !orderData ||
-      !"_id" in orderData ||
-      !orderData._id.toString() === orderId
-    ) {
-      return resolve({ notFound: "Order Not Found" });
-    }
+    await new User({
+      name: "suresh",
+      phone: 8989898989,
+    }).save({ session: sessionMongo });
 
-    // Validate Razorpay Credentials
-    if (
-      this.validateRazorpayPayment(
-        orderData.paymentInfo.gatewayOrderId,
-        paymentId,
-        signature
-      ) === false
-    ) {
-      return resolve({ notFound: "Payment Not Valid" });
-    }
+    await sessionMongo.commitTransaction();
 
-    // Fetch Payment info from Razorpay-SDK
-    const payment = await razorpay.payments.fetch(paymentId);
-    if (
-      !payment ||
-      !payment.id === paymentId ||
-      !payment.order_id === orderData.paymentInfo.gatewayOrderId ||
-      !orderData.totalPrice * 100 === payment.amount
-    ) {
-      return resolve({ notFound: "Payment not found" });
-    }
-
-    // Start Session
-    // const session = await mongoose.startSession();
-    // session.startTransaction();
-
-    try {
-      // Remove Products from Cart
-      const productIds = orderData.products.map((item) => item.itemId);
-      await Cart.deleteMany({
-        userId: userId,
-        productId: { $in: productIds },
-      });
-
-      // Deduct the Item from inventory.
-      for (let i = 0; i < orderData.products.length; i++) {
-        const product = orderData.products[i];
-        await Product.updateOne(
-          {
-            _id: product.itemId,
-            "inventory.size": product.size,
-          },
-          { $inc: { "inventory.$.items": -product.qty } }
-          // { session }
-        );
-      }
-
-      // Set the Current address as Last used.
-      // Update User order count.
-      const user = await User.updateOne(
-        {
-          _id: userId,
-          "addresses._id": orderData.deliveryAddressId,
-        },
-        {
-          $set: { "addresses.$.lastUsed": new Date() },
-          $inc: { orders: 1 },
-        }
-        // { session }
-      );
-
-      // Payment Status
-      const orderInfo = await Order.findOneAndUpdate(
-        { _id: new mongoose.Types.ObjectId(orderId) },
-        {
-          status: "ORDER_PLACED",
-          paidOn: new Date(),
-          "paymentInfo.gatewayPaymentId": paymentId,
-          "paymentInfo.method": payment.method,
-          "paymentInfo.amountPaid": payment.amount / 100,
-          "paymentInfo.verificationData": {
-            signature: signature,
-          },
-        },
-        {
-          new: true,
-          // session: session
-        }
-      ).exec();
-
-      // Send User an email to complete their profile setup
-      await sendEmail({
-        email: user.email,
-        subject: "Congrats for purchasing product from our website, continuing",
-        message,
-      });
-
-      // await session.commitTransaction();
-      // session.endSession();
-
-      resolve({ data: orderInfo.toObject() });
-    } catch (error) {
-      if (error.code === 20) {
-        return resolve({ notFound: "Error while using mongodb sessions" });
-      }
-      // await session.abortTransaction();
-      // session.endSession();
-      resolve({ error: `Failed to Update the Order.` });
-    }
+    resolve();
   });
 };
 
@@ -225,20 +121,21 @@ module.exports.create_order = (userId, body) => {
         return resolve({ notFound: "Address Not found" });
 
       // All of the items sent were valid
-      const validProducts = products.filter(
-        (product) =>
+      products.map((product) => {
+        if (
           mongoose.Types.ObjectId.isValid(product.id) &&
           typeof product.size === "string" &&
           typeof product.qty === "number" &&
           product.qty < 11 &&
-          product.qty > 0
-      );
-      // Check If all products are valid
-      if (validProducts.length !== products.length) {
-        return resolve({ error: `Invalid Request body sent by user.` });
-      }
+          product.qty > 0 == false
+        ) {
+          return resolve({ error: `Invalid Request body sent by user.` });
+        }
+      });
 
-      const inventoryRequests = validProducts.map(async (prod) =>
+      // Check If all products are valid
+
+      const inventoryRequests = products.map(async (prod) =>
         this.getProductById(prod.id, {
           inventory: 1,
           stock: 1,
@@ -261,7 +158,7 @@ module.exports.create_order = (userId, body) => {
 
       Promise.all(inventoryRequests)
         .then(async (allInventories) => {
-          validProducts.forEach(async (product) => {
+          products.forEach(async (product) => {
             const item = allInventories.find(
               (p) => p.id.toString() === product.id
             );
@@ -274,9 +171,9 @@ module.exports.create_order = (userId, body) => {
           let totalPrice = deliveryCharge;
 
           // Total of all products in TotalPrice
-          for (let index = 0; index < validProducts.length; index++) {
-            totalMrp += validProducts[index].mrp * validProducts[index].qty;
-            totalPrice += validProducts[index].price * validProducts[index].qty;
+          for (let index = 0; index < products.length; index++) {
+            totalMrp += products[index].mrp * products[index].qty;
+            totalPrice += products[index].price * products[index].qty;
           }
 
           const options = {
@@ -290,7 +187,6 @@ module.exports.create_order = (userId, body) => {
           if ("coupon" in body) {
             // ? Validate Coupon and decrease the amount
             const coupon = await Coupon.findOne({ code: req.body.coupon.code });
-            console.log("coupon", coupon);
 
             // check 1: !coupon : Invalid coupon code
             if (!coupon) {
@@ -327,7 +223,7 @@ module.exports.create_order = (userId, body) => {
             );
           }
 
-          const productsToSave = validProducts.map((product) => {
+          const productsToSave = products.map((product) => {
             return {
               itemId: new mongoose.mongo.ObjectId(product.id),
               size: product.size,

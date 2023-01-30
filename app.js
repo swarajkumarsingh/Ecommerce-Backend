@@ -29,8 +29,10 @@ firebase.initializeApp({
 
 const userRoute = require("./routes/user.routes.js");
 const cartRoute = require("./routes/cart.routes.js");
+const shopRoute = require("./routes/shop.routes.js");
 const orderRoute = require("./routes/order.routes.js");
 const reviewRoute = require("./routes/review.routes.js");
+const sellerRoute = require("./routes/seller.routes.js");
 const couponRoute = require("./routes/coupon.routes.js");
 const accountRoute = require("./routes/account.routes.js");
 const productRoute = require("./routes/product.routes.js");
@@ -45,7 +47,9 @@ app.use("/account", accountRoute);
 // app.use(firebaseUserAuthenticator); // Get userID from token
 app.use("/api/v1", userRoute);
 app.use("/api/v1", cartRoute);
+app.use("/api/v1", shopRoute);
 app.use("/api/v1", orderRoute);
+app.use("/api/v1", sellerRoute);
 app.use("/api/v1", reviewRoute);
 app.use("/api/v1", couponRoute);
 app.use("/api/v1", productRoute);

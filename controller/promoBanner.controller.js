@@ -2,7 +2,6 @@ const model = require("../model/promoBanner.model.js");
 
 module.exports.createPromoBanner = async (req, res) => {
   const response = await model.createPromoBanner(req.body);
-  console.log(response);
   if (response && "id" in response) {
     return res.successResponse("Banner created successfully", response);
   } else if (response && "already" in response) {
@@ -46,7 +45,6 @@ module.exports.getPromoBannerByKey = async (req, res) => {
 module.exports.updatePromoBanner = async (req, res) => {
   const id = req.params.id;
   const response = await model.updatePromoBanner(id, req.body);
-  console.log(response);
   if (response && "id" in response) {
     return res.successResponse("Banner updated successfully", response);
   } else if (response && "already" in response) {

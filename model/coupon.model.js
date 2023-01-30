@@ -28,7 +28,6 @@ module.exports.getCouponById = async (id) => {
   return new Promise(async (resolve) => {
     try {
       const coupon = await this.findCouponById(id);
-      console.log(id, coupon);
 
       if (coupon == null) {
         return { error: "Coupon not found" };
@@ -194,6 +193,5 @@ module.exports.findCouponByCode = async (code, projection) => {
 
 module.exports.findCouponById = async (id, projection) => {
   const coupon = await Coupon.findById(id, projection || {});
-  console.log(coupon);
   return coupon;
 };

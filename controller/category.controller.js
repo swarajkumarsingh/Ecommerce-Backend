@@ -3,7 +3,6 @@ const model = require("../model/category.model.js");
 module.exports.createCategory = async (req, res) => {
   const userId = req.userId;
   const response = await model.createCategory(userId, req.body);
-  console.log(response);
   if (response && "id" in response) {
     return res.successResponse("Category created successfully", response);
   } else if (response && "already" in response) {
@@ -59,7 +58,6 @@ module.exports.getProductsByCategory = async (req, res) => {
   const id = req.params.id;
   const { page, limit } = req.query;
   const products = await model.getProductsByCategory(id, page, limit);
-  console.log(products);
   if (products && Array.isArray(products)) {
     return res.successResponse("All Products fetched successfully", products);
   }

@@ -47,6 +47,7 @@ async function importData() {
         mrp: p.mrp,
         price: p.price,
         stock: p.stock,
+        inventory: p.inventory,
       })
         .save()
         .then(async () => {

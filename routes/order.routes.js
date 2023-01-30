@@ -54,7 +54,7 @@ router.post(
 router.post(
   "/verify-purchase",
   [
-    body("orderId", "Invalid Order Id Sent").isMongoId(),
+    body("orderId", "Invalid Order Id Sent").isLength({ min: 1 }),
     body("paymentId", "Invalid Payment Id Sent").isLength({ min: 10 }),
     body("signature", "No Verification data was sent.").isLength({ min: 50 }),
   ],

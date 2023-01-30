@@ -37,6 +37,9 @@ const productSchema = new Schema(
     stock: { type: Number, default: 100 },
     isWearAndReturnEnabled: { type: Boolean, default: false },
 
+    adminId: { type: mongoose.Types.ObjectId, ref: "User" },
+    shopId: { type: mongoose.Types.ObjectId, ref: "Shop" },
+
     locationName: { type: String, trim: true },
     location: {
       type: {

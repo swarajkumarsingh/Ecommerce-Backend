@@ -4,7 +4,6 @@ const mongoose = require("mongoose");
 mongoose.set("strictQuery", true);
 mongoose.Promise = global.Promise;
 
-
 // TODO: Change Mongo URI ( URI Exposed in Github )
 // const mongoURL = process.env.DB_URL;
 
@@ -38,6 +37,6 @@ module.exports = connectToDatabase = async () => {
     })
     .catch((err) => {
       console.log(`Error connecting DB`, err);
-      return Promise.reject(err);
+      return process.exit(1)
     });
 };

@@ -103,8 +103,6 @@ module.exports.getTopRatedProducts = async () => {
         { $limit: 10 },
       ]);
 
-      console.log(products);
-
       if (!products || !Arrays.isArray(products)) {
         return resolve({ notFound: "Error while fetching top rated products" });
       }

@@ -9,7 +9,13 @@
     "mrp": "700",
     "category": "Cloth",
     "stock": "100",
-    "isWearAndReturnEnabled": "true"
+    "isWearAndReturnEnabled": "true",
+    "inventory": [
+      {
+        "size": "S",
+        "items": 50
+      }
+    ]
   },
   {
     "name": "Levi's Men's Regular Fit Shirt",
@@ -21,7 +27,13 @@
     "mrp": "1500",
     "category": "Cloth",
     "stock": "300",
-    "isWearAndReturnEnabled": "true"
+    "isWearAndReturnEnabled": "true",
+     "inventory": [
+      {
+        "size": "S",
+        "items": 50
+      }
+    ]
   },
   {
     "name": "SXV 'Chicago’ Printed Cool Aesthetic Sweatshirt Hoodie",
@@ -33,7 +45,13 @@
     "mrp": "1300",
     "category": "Cloth",
     "stock": "200",
-    "isWearAndReturnEnabled": "true"
+    "isWearAndReturnEnabled": "true",
+     "inventory": [
+      {
+        "size": "S",
+        "items": 50
+      }
+    ]
   },
   {
     "name": "Puma Mens Maximal Comfort-everglide Range Walking Shoe",
@@ -45,6 +63,12 @@
     "mrp": "1300",
     "category": "Cloth",
     "stock": "200",
-    "isWearAndReturnEnabled": "true"
+    "isWearAndReturnEnabled": "true",
+     "inventory": [
+      {
+        "size": "S",
+        "items": 50
+      }
+    ]
   }
 ]

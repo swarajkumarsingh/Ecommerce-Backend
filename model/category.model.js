@@ -71,7 +71,6 @@ module.exports.getCategoryByName = async (name) => {
 
 module.exports.getProductsByCategory = async (id, page, limit) => {
   try {
-    console.log(id);
     const mongoLimit = limit || 8;
     const mongoSkip = page ? (parseInt(page) - 1) * mongoLimit : 0;
     const query = [];
@@ -201,6 +200,5 @@ module.exports.updateCategory = async (id, body) => {
 
 module.exports.findIfCategoryAlreadyExists = async (name) => {
   const category = await Category.findOne({ name });
-  console.log("a", category);
   return category != null ? true : false;
 };
