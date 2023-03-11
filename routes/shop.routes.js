@@ -1,6 +1,6 @@
 const express = require("express");
 const { body, param } = require("express-validator");
-const controller = require("../controller/seller.controller.js");
+const controller = require("../controller/shop.controller.js");
 const { authorizeRoles } = require("../util/middlewares/auth.js");
 
 const router = new express.Router();
@@ -20,14 +20,27 @@ router.post(
   "/shop",
   [
     body("name", "Invalid Name").isLength({ min: 1 }),
-    body("businessName", "Invalid Business Name").isLength({ min: 1 }),
-    body("image", "Invalid image").isLength({ min: 1 }),
-    body("bannerImage", "Invalid bannerImage").isLength({ min: 1 }),
+    body("description", "Invalid description").isLength({ min: 5 }).optional(),
+    body("sellerId", "Invalid sellerId").isMongoId(),
+    body("profilePhoto", "Invalid profilePhoto")
+      .isLength({ min: 1 })
+      .optional(),
+    body("media", "Invalid image").isArray().optional(),
+    body("clothCount", "Invalid clothCount").isLength({ min: 1 }).optional(),
+    body("listedClothCount", "Invalid listedClothCount")
+      .isLength({ min: 1 })
+      .optional(),
+    body("maxPrice", "Invalid maxPrice").isLength({ min: 1 }).optional(),
+    body("minPrice", "Invalid minPrice").isLength({ min: 1 }).optional(),
+    body("phoneNumber", "Invalid phoneNumber").isMobilePhone(),
+    body("isSaleLive", "Invalid isSaleLive").isBoolean(),
+    body("area", "Invalid area").isLength({ min: 1 }),
     body("address", "Invalid address").isLength({ min: 1 }),
     body("city", "Invalid city").isLength({ min: 1 }),
-    body("locationName", "Invalid locationName").isLength({ min: 1 }),
+    body("state", "Invalid state").isLength({ min: 1 }),
+    body("pincode", "Invalid pincode").isLength({ min: 1 }),
+    body("social", "Invalid social").isObject().optional(),
     body("location", "Invalid location").isArray().optional(),
-    body("description", "Invalid description").isLength({ min: 5, max: 1000 }),
   ],
   requestValidator,
   authorizeRoles("admin", "seller"),
@@ -42,9 +55,12 @@ router.get(
 );
 
 router.get(
-  "/shops",
+  "/shop/:id/earn",
+  [param("id", "Invalid seller id").isMongoId(), requestValidator],
   authorizeRoles("admin", "seller"),
-  controller.getShops
+  controller.getShopEarnings
 );
+
+router.get("/shops", authorizeRoles("admin", "seller"), controller.getShopsOfSeller);
 
 module.exports = router;

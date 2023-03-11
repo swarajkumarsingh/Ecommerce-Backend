@@ -9,6 +9,7 @@ const Coupon = require("../db/model/Coupon.js");
 const Product = require("../db/model/Product.js");
 
 const sendEmail = require("./../util/sendMail.js");
+const Shop = require("../db/model/Shop.js");
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID_TEST,
@@ -34,17 +35,157 @@ module.exports.verifyOrderPurchase = async (
   signature
 ) => {
   return new Promise(async (resolve) => {
-    const sessionMongo = await mongoose.startSession();
-    sessionMongo.startTransaction();
+    // Find the Specific Order
+    const orderData = await Order.findOne(
+      {
+        _id: new mongoose.Types.ObjectId(orderId),
+        userId: new mongoose.Types.ObjectId(userId),
+      },
+      { paymentInfo: 1, totalPrice: 1, products: 1, deliveryAddressId: 1 }
+    );
 
-    await new User({
-      name: "suresh",
-      phone: 8989898989,
-    }).save({ session: sessionMongo });
+    if (
+      !orderData ||
+      !"_id" in orderData ||
+      !orderData._id.toString() === orderId
+    ) {
+      return resolve({ notFound: "Order Not Found" });
+    }
 
-    await sessionMongo.commitTransaction();
+    // Validate Razorpay Credentials
+    if (
+      this.validateRazorpayPayment(
+        orderData.paymentInfo.gatewayOrderId,
+        paymentId,
+        signature
+      ) === false
+    ) {
+      return resolve({ notFound: "Payment Not Valid" });
+    }
 
-    resolve();
+    // Fetch Payment info from Razorpay-SDK
+    const payment = await razorpay.payments.fetch(paymentId);
+    if (
+      !payment ||
+      !payment.id === paymentId ||
+      !payment.order_id === orderData.paymentInfo.gatewayOrderId ||
+      !orderData.totalPrice * 100 === payment.amount
+    ) {
+      return resolve({ notFound: "Payment not found" });
+    }
+
+    // Start Session
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      // Remove Products from Cart
+      const productIds = orderData.products.map((item) => item.itemId);
+
+      await Cart.deleteMany({
+        userId: userId,
+        productId: { $in: productIds },
+      });
+
+      // Deduct the Item from inventory.
+      for (let i = 0; i < orderData.products.length; i++) {
+        const product = orderData.products[i];
+        await Product.updateOne(
+          {
+            _id: product.itemId,
+            "inventory.size": product.size,
+          },
+          { $inc: { "inventory.$.items": -product.qty } },
+          { session }
+        );
+      }
+
+      // Set the Current address as Last used.
+      // Update User order count.
+      const user = await User.updateOne(
+        {
+          _id: userId,
+          "addresses._id": orderData.deliveryAddressId,
+        },
+        {
+          $set: { "addresses.$.lastUsed": new Date() },
+          $inc: { orders: 1 },
+        },
+        { session }
+      );
+
+      // Payment Status
+      const orderInfo = await Order.findOneAndUpdate(
+        { _id: new mongoose.Types.ObjectId(orderId) },
+        {
+          status: "ORDER_PLACED",
+          paidOn: new Date(),
+          "paymentInfo.gatewayPaymentId": paymentId,
+          "paymentInfo.method": payment.method,
+          "paymentInfo.amountPaid": payment.amount / 100,
+          "paymentInfo.verificationData": {
+            signature: signature,
+          },
+        },
+        {
+          new: true,
+          session: session,
+        }
+      ).exec();
+
+      // Check if the Product is Posted by
+      productIds.map(async (pid) => {
+        const product = await Product.find({
+          _id: new mongoose.Types.ObjectId(pid),
+        });
+        const shopID = product.shopId.toString();
+
+        // Product created by Shop, then update values in Shop collection
+        if (shopID.length !== 0) {
+          const myProduct = orderInfo.products.find((o) => o.itemId === pid);
+          const productCount = myProduct.count;
+          const productAmount = myProduct.purchasePrice;
+
+          await Shop.updateOne(
+            { _id: new mongoose.Types.ObjectId(shopID) },
+            {
+              $push: {
+                productsSold: {
+                  productId: pid,
+                  customerId: userId,
+                  count: productCount,
+                  productAmount,
+                  orderId,
+                },
+              },
+            },
+            {
+              new: true,
+              session: session,
+            }
+          );
+        }
+      });
+
+      // Send User an email to complete their profile setup
+      await sendEmail({
+        email: user.email,
+        subject: "Congrats for purchasing product from our website, continuing",
+        message,
+      });
+
+      await session.commitTransaction();
+      session.endSession();
+
+      resolve({ data: orderInfo.toObject() });
+    } catch (error) {
+      if (error.code === 20) {
+        return resolve({ notFound: "Error while using mongodb sessions" });
+      }
+      // await session.abortTransaction();
+      // session.endSession();
+      resolve({ error: `Failed to Update the Order.` });
+    }
   });
 };
 

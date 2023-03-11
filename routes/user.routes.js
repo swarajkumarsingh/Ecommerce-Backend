@@ -32,7 +32,7 @@ router.post(
     body("name", "Invalid Name").isLength({ min: 3, max: 100 }),
     body("email", "Invalid email").isEmail(),
     body("password", "Invalid Password").isLength({ min: 6, max: 30 }),
-    body("phone", "Invalid Phone Number").isLength({ min: 13, max: 13 }),
+    body("phone", "Invalid Phone Number").isMobilePhone(),
   ],
   requestValidator,
   createUser

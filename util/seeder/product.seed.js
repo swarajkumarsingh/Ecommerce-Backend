@@ -1,42 +1,28 @@
 /* eslint-disable require-jsdoc */
-const Product = require("../../db/model/Product.js");
-const mongoose = require("mongoose");
-// const connectToDatabase = require("../../db/connect.js")
-mongoose.set("strictQuery", true);
-require("colors");
 const fs = require("fs");
+const mongoose = require("mongoose");
 const path = require("path");
+require("colors");
 
+mongoose.set("strictQuery", true);
+
+const Product = require("../../db/model/Product.js");
 const dataPath = path.join(__filename, "../../../_data/product.mock.json");
-
 const products = JSON.parse(fs.readFileSync(dataPath, "utf8"));
 
-// mongoose
-//   .connect("mongodb://localhost:27017/Ecommerce-Backend", {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-//   })
-//   .catch((err) => {
-//     console.log(err.stack);
-//     process.exit(1);
-//   })
-//   .then(() => {});
-
-async function dB() {
-  try {
-    await mongoose.connect("mongodb://localhost:27017/Ecommerce-Backend");
-  } catch (error) {
-    console.log(":(", error);
-  }
-}
-
-dB();
+// const mongoURL = process.env.DB_URL;
+const mongoURL = "mongodb://0.0.0.0:27017/Ecommerce-Backend";
 
 async function importData() {
   try {
-    products.map(async (p, index) => {
-      // await Product.create({p})
-      new Product({
+    await mongoose.connect(mongoURL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+
+    for (let index = 0; index < products.length; index++) {
+      const p = products[index];
+      await Product.create({
         name: p.name,
         description: p.description,
         brandInfo: p.brandInfo,
@@ -48,21 +34,18 @@ async function importData() {
         price: p.price,
         stock: p.stock,
         inventory: p.inventory,
-      })
-        .save()
-        .then(async () => {
-          const pDucts = await Product.countDocuments();
-          if (Number(pDucts) > 0) {
-            console.log("Data Imported...".green.inverse);
-            process.exit(1);
-          } else {
-            console.log("Unexpected error occurred :(".red.inverse);
-            process.exit(0);
-          }
-        });
-    });
+      });
+    }
+
+    const count = await Product.countDocuments();
+    if (Number(count) === 0 || Number(count) !== products.length) {
+      console.log("Error while importing data".red.inverse);
+      return process.exit(0);
+    }
+
+    console.log("Data Imported...".green.inverse);
+    return process.exit(0);
   } catch (error) {
-    console.log(error);
     console.log("Error while importing data".red.inverse);
     process.exit(0);
   }
@@ -70,6 +53,10 @@ async function importData() {
 
 async function deleteData() {
   try {
+    await mongoose.connect(mongoURL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
     await Product.deleteMany();
     console.log("Data Destroyed...".red.inverse);
     process.exit();

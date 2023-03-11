@@ -3,7 +3,7 @@ const model = require("../model/cart.model.js");
 module.exports.addCart = async (req, res) => {
   const { productId, size, count } = req.body;
   const userId = req.userId;
-  const response = await model.add_cart(userId, productId, size, count);
+  const response = await model.addCart(userId, productId, size, count);
   if (response && "id" in response) {
     return res.successResponse("Cart created successfully", response);
   }

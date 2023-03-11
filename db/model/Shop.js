@@ -4,7 +4,6 @@ const Schema = mongoose.Schema;
 const storeSchema = new Schema(
   {
     name: { type: String, required: true, trim: true, unique: true },
-    description: { type: String, trim: true },
     profilePhoto: { type: String, trim: true },
     media: [{ type: String }],
 
@@ -14,11 +13,11 @@ const storeSchema = new Schema(
     minPrice: { type: Number, default: 0 },
     rating: { type: Number, default: 0 },
     reviewCount: { type: Number, default: 0 },
-    sellerId: { type: Schema.Types.ObjectId, ref: "Seller" },
+    sellerId: { type: Schema.Types.ObjectId, required: true, ref: "Seller" },
 
     productsSold: [
       {
-        productIds: { type: Schema.Types.ObjectId, ref: "Product" },
+        productId: { type: Schema.Types.ObjectId, ref: "Product" },
         customerId: { type: Schema.Types.ObjectId, ref: "User" },
         count: { type: Number },
         productAmount: { type: Number },
@@ -26,15 +25,16 @@ const storeSchema = new Schema(
       },
     ],
 
-    phoneNumber: { type: String, trim: true },
+    phoneNumber: { type: String, required: true, trim: true },
 
-    isSaleLive: { type: Boolean, default: false },
+    isSaleLive: { type: Boolean, required: true, default: false },
 
-    area: { type: String, trim: true },
-    address: { type: String, trim: true },
-    city: { type: String, trim: true },
-    state: { type: String, trim: true },
-    pincode: { type: Number },
+    area: { type: String, required: true, trim: true },
+    address: { type: String, required: true, trim: true },
+    city: { type: String, required: true, trim: true },
+    state: { type: String, required: true, trim: true },
+    pincode: { type: Number, required: true },
+    
     location: {
       type: {
         type: String, // Don't do `{ location: { type: String } }`
@@ -79,6 +79,7 @@ const storeSchema = new Schema(
 );
 
 storeSchema.index({ location: "2dsphere" });
+storeSchema.index({ name: 1 }, { sparse: true });
 storeSchema.index({ name: "text", description: "text" });
 
 module.exports = mongoose.model("Store", storeSchema, "Store");

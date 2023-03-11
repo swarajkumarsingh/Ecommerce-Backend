@@ -5,9 +5,7 @@ module.exports.createUser = async (req, res) => {
   if (user && "id" in user) {
     return res.successResponse("User created successfully", user);
   } else if (user && "already" in user) {
-    return res
-      .status(202)
-      .json({ error: true, message: "User already exists" });
+    return res.alreadyExistsResponse("User already exists");
   }
   return res.internalErrorResponse("Something went wrong");
 };
@@ -20,9 +18,8 @@ module.exports.updateProfile = async (req, res) => {
   } else if (response && "notFound" in response) {
     return res.notFoundResponse(response.notFound);
   } else if (response && "already" in response) {
-    return res.errorResponse(res.already, 401);
+    return res.alreadyExistsResponse(res.already);
   }
-  res.internalErrorResponse("Something went wrong");
 };
 
 module.exports.updateUser = async (req, res) => {
@@ -31,9 +28,7 @@ module.exports.updateUser = async (req, res) => {
   if (response && "data" in response) {
     return res.successResponse("Account Updated", response.data);
   } else if (response && "notFound" in response) {
-    return res
-      .status(404)
-      .json({ error: true, message: "No user found with the given id" });
+    return res.notFoundResponse("No user found with the given id");
   }
   res.internalErrorResponse("Something went wrong");
 };
@@ -44,9 +39,7 @@ module.exports.updateUserRole = async (req, res) => {
   if (response && "data" in response) {
     return res.successResponse("Account Role Updated", response.data);
   } else if (response && "notFound" in response) {
-    return res
-      .status(404)
-      .json({ error: true, message: "No user found with the given id" });
+    return res.notFoundResponse("No user found with the given id");
   }
   res.internalErrorResponse("Something went wrong");
 };
@@ -57,9 +50,7 @@ module.exports.getMyProfile = async (req, res) => {
   if (user && "id" in user) {
     return res.successResponse("Fetched My Profile Info", user);
   } else if (user && "notFound" in user) {
-    return res
-      .status(404)
-      .json({ error: true, message: "No user found with the given id" });
+    return res.notFoundResponse("No user found with the given id");
   }
   res.internalErrorResponse("Something went wrong");
 };
@@ -73,9 +64,7 @@ module.exports.deleteUser = async (req, res) => {
       response.user
     );
   } else if (response && "notFound" in response) {
-    return res
-      .status(404)
-      .json({ error: true, message: "No user found with the given id" });
+    return res.notFoundResponse("No user found with the given id");
   }
   res.internalErrorResponse("Something went wrong", response.error);
 };
@@ -86,9 +75,7 @@ module.exports.getUser = async (req, res) => {
   if (user && "id" in user) {
     return res.successResponse("Fetched My Profile Info", user);
   } else if (user && "notFound" in user) {
-    return res
-      .status(404)
-      .json({ error: true, message: "No user found with the given id" });
+    return res.notFoundResponse("No user found with the given id");
   }
   res.internalErrorResponse("Something went wrong");
 };
@@ -101,9 +88,7 @@ module.exports.getUserRole = async (req, res) => {
       role: user.role,
     });
   } else if (user && "notFound" in user) {
-    return res
-      .status(404)
-      .json({ error: true, message: "No user found with the given id" });
+    return res.notFoundResponse("No user found with the given id");
   }
   res.internalErrorResponse("Something went wrong");
 };

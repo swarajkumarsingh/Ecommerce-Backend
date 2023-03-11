@@ -7,21 +7,13 @@ Project Overview:
 
 
 Seller Diagram 
-	--> [ ] List Stores
-		--> [ ] Store A
-		--> [ ] Store B
-
 		< Store >
-		--> [ ] Create Store
-		--> [ ] Get All Stores
-		--> [ ] Get Single Store
-		--> [ ] Get earning of single Store
-		--> [ ] Update Store
-		--> [ ] Delete Store
-
-		< Security - Admin >
-		--> [ ] Check if store is valid ( after store is valid, then we can proceed to list products from shop)
-		--> [ ] Store Not Valid ( restrict store to upload products & delete store existing products )
+		--> [x] Create Store
+		--> [x] Get All Stores
+		--> [x] Get Single Store (Get All Products created by the shop)
+		--> [x] Get earning of single Store
+		--> [x] Update Store
+		--> [x] Delete Store
 
 		< Product >
 		--> [ ] Create Product from Store
@@ -32,8 +24,9 @@ Seller Diagram
 		--> [ ] Delete Product from Store
 
 	< Seller Profile >
+	--> [x] List Stores of seller
 	--> [x] Create Seller Profile
-	--> [x] Get Seller Profile
+	--> [x] Get Seller Profile (All Shops, total revenue, total products, analysis)
 	--> [ ] Get All Products from All Store
 	--> [ ] Get All Products sold from All Store
 	--> [ ] Request Money Transfer to account - Manual

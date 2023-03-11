@@ -9,34 +9,43 @@ const User = require("../../db/model/User.js");
 // Warning's = false
 mongoose.set("strictQuery", true);
 
-
 // Read User data from user.mock.json file
 const dataPath = path.join(__filename, "../../../_data/user.mock.json");
 const users = JSON.parse(fs.readFileSync(dataPath, "utf8"));
 
 // Connect mongoose
-mongoose
-  .connect("mongodb://localhost:27017/Ecommerce-Backend", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .catch((err) => {
-    console.log(err.stack);
-    process.exit(1);
-  })
-  .then(() => {});
+// const mongoURL = process.env.DB_URL;
+const mongoURL = "mongodb://0.0.0.0:27017/Ecommerce-Backend";
 
 // Create Users
 async function importData() {
   try {
-    users.map(async (p, index) => {
-      new User({ p }).save();
-
-      if (index === users.length - 1) {
-        console.log("Data Imported...".green.inverse);
-        process.exit(1);
+    await mongoose.connect(
+      mongoURL,
+      {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
       }
-    });
+    );
+
+    for (let index = 0; index < users.length; index++) {
+      await User.create({
+        name: users[index].name,
+        email: users[index].email,
+        phone: users[index].phone,
+        password: users[index].password,
+        fullAddress: users[index].address,
+      });
+    }
+
+    const count = await User.countDocuments();
+    if (Number(count) === 0 || Number(count) !== users.length) {
+      console.log("Error while importing data".red.inverse);
+      return process.exit(0);
+    }
+
+    console.log("Data Imported...".green.inverse);
+    return process.exit(0);
   } catch (error) {
     console.log("Error while importing data".red.inverse);
   }
@@ -45,6 +54,13 @@ async function importData() {
 // Delete All Users
 async function deleteData() {
   try {
+    await mongoose.connect(
+      mongoURL,
+      {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      }
+    );
     await User.deleteMany();
     console.log("Data Destroyed...".red.inverse);
     process.exit();

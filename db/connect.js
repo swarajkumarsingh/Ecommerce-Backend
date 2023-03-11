@@ -4,10 +4,9 @@ const mongoose = require("mongoose");
 mongoose.set("strictQuery", true);
 mongoose.Promise = global.Promise;
 
-// TODO: Change Mongo URI ( URI Exposed in Github )
 // const mongoURL = process.env.DB_URL;
 
-const mongoURL = "mongodb://localhost:27017/Ecommerce-Backend";
+const mongoURL = "mongodb://0.0.0.0:27017/Ecommerce-Backend";
 
 let isConnected;
 let isDbConnectionRequested = false;
@@ -36,7 +35,11 @@ module.exports = connectToDatabase = async () => {
       return Promise.resolve();
     })
     .catch((err) => {
+      if (err.code === "ECONNREFUSED") {
+        console.log("Internet not connected");
+        return process.exit(1);
+      }
       console.log(`Error connecting DB`, err);
-      return process.exit(1)
+      return process.exit(1);
     });
 };
