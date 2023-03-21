@@ -2,9 +2,16 @@ const Product = require("../db/model/Product.js");
 const mongoose = require("mongoose");
 
 // TODO: Trending Products
+module.exports.trendingProducts = async = () => {};
+
 // TODO: Products from your search
+module.exports.productsFromYourSearch = async = () => {};
+
 // TODO: Most ordered Products
+module.exports.mostOrderedProducts = async = () => {};
+
 // TODO: Products with highest ratings
+module.exports.highRatedProducts = async = () => {};
 
 module.exports.createProduct = async (req) => {
   return new Promise(async (resolve) => {
