@@ -45,7 +45,6 @@ app.use(fakeAuthorizer); // All Rest APIs require Authentication
 // app.use(apiKeyAuthenticator); // Adds API key validation to APIs
 app.use("/account", accountRoute);
 // app.use(firebaseUserAuthenticator); // Get userID from token
-app.use("/api/v1", shopRoute);
 app.use("/api/v1", userRoute);
 app.use("/api/v1", cartRoute);
 app.use("/api/v1", shopRoute);
@@ -54,7 +53,6 @@ app.use("/api/v1", sellerRoute);
 app.use("/api/v1", reviewRoute);
 app.use("/api/v1", couponRoute);
 app.use("/api/v1", productRoute);
-``;
 app.use("/api/v1", wishlistRoute);
 app.use("/api/v1", categoryRoute);
 app.use("/api/v1", promoBannerRoute);

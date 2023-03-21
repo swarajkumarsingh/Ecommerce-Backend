@@ -10,6 +10,7 @@ const Product = require("../db/model/Product.js");
 
 const sendEmail = require("./../util/sendMail.js");
 const Shop = require("../db/model/Shop.js");
+const Seller = require("../db/model/Seller.js");
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID_TEST,
@@ -75,13 +76,15 @@ module.exports.verifyOrderPurchase = async (
     }
 
     // Start Session
+    // MongoDB session, cancel all the transactions if even a single of them fails.
     const session = await mongoose.startSession();
     session.startTransaction();
 
     try {
-      // Remove Products from Cart
+      // Loop through all Product-IDs
       const productIds = orderData.products.map((item) => item.itemId);
 
+      // Remove Products from Cart
       await Cart.deleteMany({
         userId: userId,
         productId: { $in: productIds },
@@ -114,7 +117,7 @@ module.exports.verifyOrderPurchase = async (
         { session }
       );
 
-      // Payment Status
+      // Update Payment Status
       const orderInfo = await Order.findOneAndUpdate(
         { _id: new mongoose.Types.ObjectId(orderId) },
         {
@@ -133,7 +136,7 @@ module.exports.verifyOrderPurchase = async (
         }
       ).exec();
 
-      // Check if the Product is Posted by
+      // Check if the Product is Posted by SHOP or ADMIN
       productIds.map(async (pid) => {
         const product = await Product.find({
           _id: new mongoose.Types.ObjectId(pid),
@@ -167,7 +170,10 @@ module.exports.verifyOrderPurchase = async (
         }
       });
 
-      // Send User an email to complete their profile setup
+      const message =
+        "Your Product is been placed, please wait till the product is delivered, Thank You Visit Again";
+
+      // Send User an email for successfully purchasing the product
       await sendEmail({
         email: user.email,
         subject: "Congrats for purchasing product from our website, continuing",
@@ -182,8 +188,8 @@ module.exports.verifyOrderPurchase = async (
       if (error.code === 20) {
         return resolve({ notFound: "Error while using mongodb sessions" });
       }
-      // await session.abortTransaction();
-      // session.endSession();
+      await session.abortTransaction();
+      session.endSession();
       resolve({ error: `Failed to Update the Order.` });
     }
   });
@@ -275,7 +281,6 @@ module.exports.create_order = (userId, body) => {
       });
 
       // Check If all products are valid
-
       const inventoryRequests = products.map(async (prod) =>
         this.getProductById(prod.id, {
           inventory: 1,
@@ -376,6 +381,7 @@ module.exports.create_order = (userId, body) => {
 
           let razorpayData;
 
+          // Try-Catch block to catch the Razorpay Errors explicitly
           try {
             razorpayData = await razorpay.orders.create(options);
           } catch (error) {
@@ -390,6 +396,7 @@ module.exports.create_order = (userId, body) => {
             });
           }
 
+          // Create Order
           const order = await Order.create({
             userId: new mongoose.Types.ObjectId(userId),
             products: productsToSave,
@@ -409,6 +416,7 @@ module.exports.create_order = (userId, body) => {
             deliveryAddressId: addressId,
           });
 
+          // Update User Orders value
           if (order && "userId" in order) {
             await User.updateOne(
               { _id: new mongoose.Types.ObjectId(userId) },

@@ -23,7 +23,7 @@ const sendEmail = async (options) => {
 
 //  await sendEmail({
 //    email: user.email,
-//    subject: `Ecommerce Password Recovery`,
+//    subject: `Commerce Password Recovery`,
 //    message,
 //  });
 
