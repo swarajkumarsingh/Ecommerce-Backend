@@ -37,6 +37,7 @@ npm install
 
 ### 1. Configure .env.examples file for credentials
 
+## Folder Structure
 
 ```
 _data
