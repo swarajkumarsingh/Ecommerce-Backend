@@ -180,8 +180,6 @@ module.exports.updateSeller = async (id, body) => {
 module.exports.deleteSellerId = async (id) => {
   return new Promise(async (resolve) => {
     try {
-      //   TODO: Test this API
-
       //   Deleting from Seller collection
       const seller = await Seller.deleteOne({
         _id: new mongoose.Types.ObjectId(id),

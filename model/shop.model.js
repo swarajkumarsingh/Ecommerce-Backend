@@ -212,8 +212,6 @@ module.exports.getShopEarnings = async (sid) => {
 module.exports.deleteShop = async (id) => {
   return new Promise(async (resolve) => {
     try {
-      //   TODO: Test this API
-
       // Delete All Products
       const products = await Product.deleteMany({
         shopId: new mongoose.Types.ObjectId(id),

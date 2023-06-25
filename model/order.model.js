@@ -135,14 +135,14 @@ module.exports.verifyOrderPurchase = async (
         }
       ).exec();
 
-      // Check if the Product is Posted by SHOP or ADMIN
+      // If the product is posted by Shop(seller), then add product credentials to Shop Schema
       productIds.map(async (pid) => {
         const product = await Product.find({
           _id: new mongoose.Types.ObjectId(pid),
         });
         const shopID = product.shopId.toString();
 
-        // Product created by Shop, then update values in Shop collection
+        // product created by shop
         if (shopID.length !== 0) {
           const myProduct = orderInfo.products.find((o) => o.itemId === pid);
           const productCount = myProduct.count;
