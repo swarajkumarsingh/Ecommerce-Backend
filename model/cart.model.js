@@ -46,7 +46,17 @@ module.exports.updateCart = (userId, productId, size, count) => {
   return new Promise(async (resolve) => {
     try {
       const product = await checkIfProductExists(productId);
+      
+      if (!product) {
+        return resolve({ notFound: "Product not found" });
+      }
+
       const user = await this.checkIfUserExists(userId);
+      
+      if (!user) {
+        return resolve({ notFound: "User not found" });
+      }
+      
       const isProductInStock = await this.isProductInInventory(
         productId,
         size,
@@ -55,14 +65,6 @@ module.exports.updateCart = (userId, productId, size, count) => {
 
       if (!isProductInStock) {
         return resolve({ notFound: "Product out of stock" });
-      }
-
-      if (!product) {
-        return resolve({ notFound: "Product not found" });
-      }
-
-      if (!user) {
-        return resolve({ notFound: "User not found" });
       }
 
       const cart = await Cart.findOneAndUpdate(

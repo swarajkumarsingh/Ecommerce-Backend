@@ -10,7 +10,6 @@ const Product = require("../db/model/Product.js");
 
 const sendEmail = require("./../util/sendMail.js");
 const Shop = require("../db/model/Shop.js");
-const Seller = require("../db/model/Seller.js");
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID_TEST,
