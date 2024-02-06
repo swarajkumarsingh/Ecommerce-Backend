@@ -4,11 +4,9 @@ const mongoose = require("mongoose");
 mongoose.set("strictQuery", true);
 mongoose.Promise = global.Promise;
 
-const mongoURL =
-  process.env.DB_URL ||
-  "mongodb+srv://swaraj:49BGoKko9svjlkeW@cluster0.9qzb8lu.mongodb.net/";
+// const mongoURL = process.env.DB_URL;
 
-// const mongoURL = "mongodb://0.0.0.0:27017/Ecommerce-Backend";
+const mongoURL = "mongodb://0.0.0.0:27017/Ecommerce-Backend";
 
 let isConnected;
 let isDbConnectionRequested = false;
