@@ -3,8 +3,8 @@ require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
 const Razorpay = require("razorpay");
 const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
+  key_id: process.env.RAZORPAY_KEY_ID || "rzp_test_hiwemQLcx1qO1R",
+  key_secret: process.env.RAZORPAY_KEY_SECRET || "HfZcqar5f5TEeFRnhscAwP9p",
 });
 
 const makeRandomString = (length) => {

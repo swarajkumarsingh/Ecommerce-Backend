@@ -12,8 +12,8 @@ const sendEmail = require("./../util/sendMail.js");
 const Shop = require("../db/model/Shop.js");
 
 const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID_TEST,
-  key_secret: process.env.RAZORPAY_KEY_SECRET_TEST,
+  key_id: process.env.RAZORPAY_KEY_ID || "rzp_test_hiwemQLcx1qO1R",
+  key_secret: process.env.RAZORPAY_KEY_SECRET || "HfZcqar5f5TEeFRnhscAwP9p",
 });
 
 module.exports.validateRazorpayPayment = (orderId, paymentId, signature) => {
@@ -81,6 +81,8 @@ module.exports.verifyOrderPurchase = async (
 
     try {
       // Loop through all Product-IDs
+
+      // TODO: remove this map and use the for loop below
       const productIds = orderData.products.map((item) => item.itemId);
 
       // Remove Products from Cart
@@ -91,6 +93,7 @@ module.exports.verifyOrderPurchase = async (
 
       // Deduct the Item from inventory.
       for (let i = 0; i < orderData.products.length; i++) {
+        // TODO: Add the productIDs here
         const product = orderData.products[i];
         await Product.updateOne(
           {

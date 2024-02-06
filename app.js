@@ -21,11 +21,11 @@ app.use(responseware(express));
 connectDb();
 
 // Firebase Admin SDK
-const firebase = require("firebase-admin");
-const serviceAccount = require("./firebase_sdk.json");
-firebase.initializeApp({
-  credential: firebase.credential.cert(serviceAccount),
-});
+// const firebase = require("firebase-admin");
+// const serviceAccount = require("./firebase_sdk.json");
+// firebase.initializeApp({
+//   credential: firebase.credential.cert(serviceAccount),
+// });
 
 const userRoute = require("./routes/user.routes.js");
 const cartRoute = require("./routes/cart.routes.js");
