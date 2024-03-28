@@ -135,7 +135,7 @@ module.exports.verifyOrderPurchase = async (
         }
       ).exec();
 
-      // If the product is posted by Shop(seller), then add product credentials to Shop Schema
+      // If the product is posted by Shop(seller) and not admin then add product credentials(productID) to Shop Schema
       productIds.map(async (pid) => {
         const product = await Product.find({
           _id: new mongoose.Types.ObjectId(pid),
